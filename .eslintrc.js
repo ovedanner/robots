@@ -9,5 +9,9 @@ module.exports = {
     browser: true
   },
   rules: {
-  }
+    "no-console": "off"
+  },
+  globals: {
+    THREE: false
+  },
 };
