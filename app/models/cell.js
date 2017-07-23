@@ -22,6 +22,12 @@ export default Ember.Object.extend({
   mesh: null,
 
   /**
+   * Walls of the cell, contains booleans:
+   * top, right, bottom, left.
+   */
+  walls: [],
+
+  /**
    * Initializes the cell and places it in the scene.
    * @param scene
    */

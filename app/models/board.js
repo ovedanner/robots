@@ -24,6 +24,11 @@ export default Ember.Object.extend({
   robots: [],
 
   /**
+   * Currently selected robot.
+   */
+  selectedRobot: null,
+
+  /**
    * Three.js environment variables.
    */
   scene: null,
@@ -74,7 +79,8 @@ export default Ember.Object.extend({
       mouse = new THREE.Vector2(),
       renderer = this.get('renderer'),
       camera = this.get('camera'),
-      scene = this.get('scene');
+      scene = this.get('scene'),
+      that = this;
 
     // Account for the offset of the canvas.
     let offset = $('#board').offset(),
@@ -84,12 +90,28 @@ export default Ember.Object.extend({
     mouse.y = - ((event.clientY - topOffset) / renderer.domElement.clientHeight ) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    let clicked = raycaster.intersectObjects(scene.children);
+    let clickedObjects = raycaster.intersectObjects(scene.children),
+      clickedCell = null,
+      clickedRobot = null;
 
-    let clickedCell = this.get('cells').find(function(cell) {
-      return cell.get('mesh') === clicked[0].object;
+    clickedObjects.forEach(function(clickedObject) {
+      clickedCell = that.get('cells').find(function(cell) {
+        return cell.get('mesh') === clickedObject.object;
+      });
+      clickedRobot = that.get('robots').find(function(robot) {
+        return robot.get('mesh') === clickedObject.object;
+      });
     });
-    if (clickedCell) {
+
+    if (clickedRobot) {
+      this.set('selectedRobot', clickedRobot);
+    }
+
+    /**
+     * See if we have to move the robot.
+     */
+    if (clickedCell && !clickedRobot && this.get('selectedRobot')) {
+      let selectedRobot = this.get('selectedRobot');
       clickedCell.get('mesh').material.color.set(0x543965);
       //clickedCell.get('mesh').position.set(clickedCell.get('x'), clickedCell.get('y'), clickedCell.get('depth'));
     }
