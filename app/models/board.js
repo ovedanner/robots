@@ -94,15 +94,21 @@ export default Ember.Object.extend({
       clickedCell = null,
       clickedRobot = null;
 
+    // Find any clicked robot and/or cell.
     clickedObjects.forEach(function(clickedObject) {
-      clickedCell = that.get('cells').find(function(cell) {
-        return cell.get('mesh') === clickedObject.object;
-      });
-      clickedRobot = that.get('robots').find(function(robot) {
-        return robot.get('mesh') === clickedObject.object;
-      });
+      if (!clickedCell) {
+        clickedCell = that.get('cells').find(function(cell) {
+          return cell.get('mesh') === clickedObject.object;
+        });
+      }
+      if (!clickedRobot) {
+        clickedRobot = that.get('robots').find(function(robot) {
+          return robot.get('mesh') === clickedObject.object;
+        });
+      }
     });
 
+    // Set the current robot if necessary.
     if (clickedRobot) {
       this.set('selectedRobot', clickedRobot);
     }
@@ -111,10 +117,17 @@ export default Ember.Object.extend({
      * See if we have to move the robot.
      */
     if (clickedCell && !clickedRobot && this.get('selectedRobot')) {
-      let selectedRobot = this.get('selectedRobot');
-      clickedCell.get('mesh').material.color.set(0x543965);
-      //clickedCell.get('mesh').position.set(clickedCell.get('x'), clickedCell.get('y'), clickedCell.get('depth'));
+      this.moveRobotToCell(this.get('selectedRobot'), clickedCell);
     }
+  },
+
+  /**
+   * Moves the given robot to the given cell (if possible).
+   * @param robot
+   * @param cell
+   */
+  moveRobotToCell: function(robot, cell) {
+    
   },
 
   /**
