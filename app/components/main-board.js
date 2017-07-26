@@ -67,7 +67,6 @@ export default Ember.Component.extend({
 
     let animate = function() {
       requestAnimationFrame(animate);
-      board.update();
       renderer.render(scene, camera);
     };
     animate();

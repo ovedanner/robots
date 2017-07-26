@@ -67,6 +67,7 @@ export default Ember.Object.extend({
       size: cellSize / 4
     });
     robot.initialize(scene);
+    this.initializeRobotAtCell(robot, this.get('cells.0'));
     this.get('robots').pushObject(robot);
   },
 
@@ -122,19 +123,25 @@ export default Ember.Object.extend({
   },
 
   /**
+   * Initializes the given robot at the given cell.
+   * @param robot
+   * @param cell
+   */
+  initializeRobotAtCell(robot, cell) {
+    let x = cell.get('x'),
+      y = cell.get('y');
+    robot.setPosition(x, y);
+  },
+
+  /**
    * Moves the given robot to the given cell (if possible).
    * @param robot
    * @param cell
    */
   moveRobotToCell: function(robot, cell) {
-    
-  },
-
-  /**
-   * This function gets called from the render loop.
-   */
-  update: function() {
-
+    if (robot.get('x') === cell.get('x') || robot.get('y') === cell.get('y')) {
+      this.initializeRobotAtCell(robot, cell);
+    }
   }
 
 });
