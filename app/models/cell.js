@@ -37,7 +37,7 @@ export default Ember.Object.extend({
       y = this.get('y'),
       depth = this.get('depth');
     let geometry = new THREE.BoxGeometry(size, size, size);
-    //let texture = new THREE.TextureLoader().load("assets/textures/test.jpg");
+    //let texture = new THREE.TextureLoader().load("assets/textures/r.png");
     let material = new THREE.MeshBasicMaterial({
       color: 0xe5e5e5 * Math.random(),
       //map: texture

@@ -41,7 +41,7 @@ export default Ember.Component.extend({
         boardSize / -2,
         1,
         1000),
-      renderer = new THREE.WebGLRenderer({canvas: this.$()[0]}),
+      renderer = new THREE.WebGLRenderer({canvas: this.$()[0], antialias: true}),
       board = new Board({
         renderer: renderer,
         camera: camera,
