@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import Cell from 'ricochet-robots/models/cell';
+import BoardLayout from 'ricochet-robots/models/board-layout';
 import Robot from 'ricochet-robots/models/robot';
 
 const {$} = Ember;
@@ -43,28 +43,18 @@ export default Ember.Object.extend({
     let scene = this.get('scene'),
       size = this.get('size');
 
-    // Cells are simply one sixteenth of the board.
-    let cellSize = size / 16;
-
-    // Initialize all cells.
-    for (let x = 0; x < 16; x ++) {
-      for (let y = 0; y < 16; y++) {
-        let cellX = (size / -2) + (x * cellSize) + (cellSize / 2),
-          cellY = (size / -2) + (y * cellSize) + (cellSize / 2),
-          cell = new Cell({
-            size: cellSize,
-            x: cellX,
-            y: cellY,
-            depth: -1000
-          });
-          this.get('cells').pushObject(cell);
-          cell.initialize(scene);
-      }
-    }
+    // Initialize the layout
+    let layout = new BoardLayout({
+      scene: scene,
+      size: size
+    });
+    this.set('cells', layout.getCells());
 
     // Initialize the robots.
     let robot = new Robot({
-      size: cellSize / 4
+      // Cells are one-sixteenth the size of the board and robots
+      // are one-fourth the size of the cell.
+      size: (size / 16) / 4
     });
     robot.initialize(scene);
     this.initializeRobotAtCell(robot, this.get('cells.0'));
@@ -139,7 +129,15 @@ export default Ember.Object.extend({
    * @param cell
    */
   moveRobotToCell: function(robot, cell) {
-    if (robot.get('x') === cell.get('x') || robot.get('y') === cell.get('y')) {
+    let robotX = robot.get('x'),
+      robotY = robot.get('y'),
+      cellX = cell.get('x'),
+      cellY = cell.get('y');
+    if (robotX === cellX) {
+      this.initializeRobotAtCell(robot, cell);
+    }
+
+    if (robotY === cellY) {
       this.initializeRobotAtCell(robot, cell);
     }
   }
