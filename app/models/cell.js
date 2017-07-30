@@ -28,6 +28,28 @@ export default Ember.Object.extend({
   walls: [],
 
   /**
+   * Cell number (used to conveniently locate
+   * adjacent cells).
+   */
+  number: null,
+
+  hasLeftWall: Ember.computed('walls.[]', function() {
+    return this.get('walls.0')
+  }),
+
+  hasTopWall: Ember.computed('walls.[]', function() {
+    return this.get('walls.1')
+  }),
+
+  hasRightWall: Ember.computed('walls.[]', function() {
+    return this.get('walls.2')
+  }),
+
+  hasBottomWall: Ember.computed('walls.[]', function() {
+    return this.get('walls.3')
+  }),
+
+  /**
    * Initializes the cell and places it in the scene.
    * @param scene
    */
@@ -38,10 +60,9 @@ export default Ember.Object.extend({
       depth = this.get('depth');
     let geometry = new THREE.BoxGeometry(size, size, size);
     let material = new THREE.MeshBasicMaterial({
-      //color: 0xe5e5e5 * Math.random(),
+      color: 0xe5e5e5,
       map: this.getTexture(),
-      transparent: true,
-      opacity: 0.5
+      transparent: true
     });
     let mesh = new THREE.Mesh(geometry, material);
     this.set('mesh', mesh);

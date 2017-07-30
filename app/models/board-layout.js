@@ -34,7 +34,8 @@ export default Ember.Object.extend({
             size: cellSize,
             x: cellX,
             y: cellY,
-            depth: -1000
+            depth: -1000,
+            number: y + (x * 16)
           });
         cell.initialize(scene);
         cells.pushObject(cell);
@@ -57,28 +58,28 @@ export default Ember.Object.extend({
     if (xIndex === 0) {
       walls.pushObject(true);
     } else {
-      walls.pushObject(Math.random() > 0.85);
+      walls.pushObject(Math.random() > 0.95);
     }
 
     // Top edge or random.
     if (yIndex === 15) {
       walls.pushObject(true);
     } else {
-      walls.pushObject(Math.random() > 0.85);
+      walls.pushObject(Math.random() > 0.95);
     }
 
     // Right edge or random.
     if (xIndex === 15) {
       walls.pushObject(true);
     } else {
-      walls.pushObject(Math.random() > 0.85);
+      walls.pushObject(Math.random() > 0.95);
     }
 
     // Bottom edge or random.
     if (yIndex === 0) {
       walls.pushObject(true);
     } else {
-      walls.pushObject(Math.random() > 0.85);
+      walls.pushObject(Math.random() > 0.95);
     }
 
     return walls;

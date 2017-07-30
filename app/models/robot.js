@@ -26,6 +26,11 @@ export default Ember.Object.extend({
   mesh: null,
 
   /**
+   * The cell the robot is currently at.
+   */
+  currentCell: null,
+
+  /**
    * Initializes the robot and places it in the scene.
    * @param scene
    */
@@ -44,15 +49,12 @@ export default Ember.Object.extend({
 
   /**
    * Sets the position of the robot.
-   * @param x
-   * @param y
+   * @param cell
    */
-  setPosition(x, y) {
-    this.setProperties({
-      x: x,
-      y: y
-    });
-    this.get('mesh').position.set(x, y, this.get('depth'));
+  setPosition(cell) {
+    this.setProperties(cell.getProperties('x', 'y'));
+    this.set('currentCell', cell);
+    this.get('mesh').position.set(this.get('x'), this.get('y'), this.get('depth'));
   }
 
 });

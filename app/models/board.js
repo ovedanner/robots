@@ -57,7 +57,7 @@ export default Ember.Object.extend({
       size: (size / 16) / 4
     });
     robot.initialize(scene);
-    this.initializeRobotAtCell(robot, this.get('cells.0'));
+    robot.setPosition(this.get('cells.0'));
     this.get('robots').pushObject(robot);
   },
 
@@ -113,33 +113,36 @@ export default Ember.Object.extend({
   },
 
   /**
-   * Initializes the given robot at the given cell.
-   * @param robot
-   * @param cell
-   */
-  initializeRobotAtCell(robot, cell) {
-    let x = cell.get('x'),
-      y = cell.get('y');
-    robot.setPosition(x, y);
-  },
-
-  /**
    * Moves the given robot to the given cell (if possible).
    * @param robot
-   * @param cell
+   * @param targetCell
    */
-  moveRobotToCell: function(robot, cell) {
-    let robotX = robot.get('x'),
-      robotY = robot.get('y'),
-      cellX = cell.get('x'),
-      cellY = cell.get('y');
-    if (robotX === cellX) {
-      this.initializeRobotAtCell(robot, cell);
-    }
+  moveRobotToCell: function(robot, targetCell) {
+    let robotCell = robot.get('currentCell'),
+      traversingCells = [],
+      robotNr = robotCell.get('number'),
+      targetNr = targetCell.get('number'),
+      clearPath = false;
 
-    if (robotY === cellY) {
-      this.initializeRobotAtCell(robot, cell);
+    // Robot and target cell are on the same horizontal
+    // line.
+    if (Math.abs(robotNr - targetNr) % 16 === 0 && robotCell.get('number') !== targetCell.get('number')) {
+
+      // User wants to move the robot to the left.
+      if (robotCell.get('number') < targetCell.get('number')) {
+        traversingCells = this.get('cells').filter(function(cell) {
+          return (cell.get('number') - robotCell.get('number')) % 16 === 0 && cell.get('number') < targetCell.get('number');
+        });
+        if (!robotCell.get('hasRightWall')) {
+          clearPath = traversingCells.every(function(cell) {
+            return !cell.get('hasRightWall');
+          });
+          if (clearPath) {
+            robot.setPosition(targetCell);
+          }
+        }
+      }
     }
-  }
+  },
 
 });
