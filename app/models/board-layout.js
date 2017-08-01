@@ -42,6 +42,10 @@ export default Ember.Object.extend({
       }
     }
 
+    cells.forEach(function(cell, index) {
+
+    });
+
     return cells;
   },
 
@@ -52,34 +56,52 @@ export default Ember.Object.extend({
    * @returns {Array}
    */
   getWalls(xIndex, yIndex) {
-    let walls = [];
+    let walls = [],
+      leftEdge = false,
+      topEdge = false,
+      rightEdge = false,
+      bottomEdge = false;
 
     // Left edge or random.
     if (xIndex === 0) {
-      walls.pushObject(true);
-    } else {
-      walls.pushObject(Math.random() > 0.95);
+      leftEdge = true;
     }
 
     // Top edge or random.
     if (yIndex === 15) {
-      walls.pushObject(true);
-    } else {
-      walls.pushObject(Math.random() > 0.95);
+      topEdge = true;
     }
 
     // Right edge or random.
     if (xIndex === 15) {
-      walls.pushObject(true);
-    } else {
-      walls.pushObject(Math.random() > 0.95);
+      rightEdge = true;
     }
 
     // Bottom edge or random.
     if (yIndex === 0) {
-      walls.pushObject(true);
+      bottomEdge = true;
+    }
+
+    if (leftEdge) {
+      let top = Math.random() > 0.95;
+      walls = [true, top, false, !top && Math.random() > 0.95];
+    } else if (topEdge) {
+      let left = Math.random() > 0.95;
+      walls = [left, true, !left && Math.random() > 0.95, false];
+    } else if (rightEdge) {
+      let top = Math.random() > 0.95;
+      walls = [false, top, true, !top && Math.random() > 0.95];
+    } else if (bottomEdge) {
+      let left = Math.random() > 0.95;
+      walls = [left, false, !left && Math.random() > 0.95, true];
     } else {
-      walls.pushObject(Math.random() > 0.95);
+      let possibilities = [
+        [true, true, false, false],
+        [true, false, false, true],
+        [false, true, true, false],
+        [false, false, true, true]
+      ];
+      walls = possibilities[Math.floor(Math.random() * 4) % 3];
     }
 
     return walls;
