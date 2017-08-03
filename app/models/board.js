@@ -127,20 +127,26 @@ export default Ember.Object.extend({
     // Robot and target cell are on the same horizontal
     // line.
     if (Math.abs(robotNr - targetNr) % 16 === 0 && robotCell.get('number') !== targetCell.get('number')) {
+      traversingCells = this.get('cells').filter(function(cell) {
+        return (cell.get('number') - robotCell.get('number')) % 16 === 0 && cell.get('number') < targetCell.get('number');
+      });
 
-      // User wants to move the robot to the left.
+      // User wants to move the robot to the right.
       if (robotCell.get('number') < targetCell.get('number')) {
-        traversingCells = this.get('cells').filter(function(cell) {
-          return (cell.get('number') - robotCell.get('number')) % 16 === 0 && cell.get('number') < targetCell.get('number');
-        });
         if (!robotCell.get('hasRightWall')) {
           clearPath = traversingCells.every(function(cell) {
             return !cell.get('hasRightWall');
           });
-          if (clearPath) {
-            robot.setPosition(targetCell);
-          }
         }
+      } else {
+        if (!robotCell.get('hasLeftWall')) {
+          clearPath = traversingCells.every(function(cell) {
+            return !cell.get('hasLeftWall');
+          });
+        }
+      }
+      if (clearPath) {
+        robot.setPosition(targetCell);
       }
     }
   },

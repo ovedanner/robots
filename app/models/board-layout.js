@@ -25,7 +25,7 @@ export default Ember.Object.extend({
     // Initialize all cells.
     let cells = [];
 
-    for (let x = 0; x < 16; x ++) {
+    for (let x = 0; x < 16; x++) {
       for (let y = 0; y < 16; y++) {
         let cellX = (size / -2) + (x * cellSize) + (cellSize / 2),
           cellY = (size / -2) + (y * cellSize) + (cellSize / 2),
@@ -82,27 +82,7 @@ export default Ember.Object.extend({
       bottomEdge = true;
     }
 
-    if (leftEdge) {
-      let top = Math.random() > 0.95;
-      walls = [true, top, false, !top && Math.random() > 0.95];
-    } else if (topEdge) {
-      let left = Math.random() > 0.95;
-      walls = [left, true, !left && Math.random() > 0.95, false];
-    } else if (rightEdge) {
-      let top = Math.random() > 0.95;
-      walls = [false, top, true, !top && Math.random() > 0.95];
-    } else if (bottomEdge) {
-      let left = Math.random() > 0.95;
-      walls = [left, false, !left && Math.random() > 0.95, true];
-    } else {
-      let possibilities = [
-        [true, true, false, false],
-        [true, false, false, true],
-        [false, true, true, false],
-        [false, false, true, true]
-      ];
-      walls = possibilities[Math.floor(Math.random() * 4) % 3];
-    }
+    walls = [leftEdge, topEdge, rightEdge, bottomEdge];
 
     return walls;
   }
