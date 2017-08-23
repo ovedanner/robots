@@ -1,6 +1,0 @@
-{
-  "name": "ricochet-robots",
-  "dependencies": {
-    "three.js": "threejs#*"
-  }
-}

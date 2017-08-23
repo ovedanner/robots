@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import THREE from 'npm:three';
 
 /**
  * Represents a cell on the board.

@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import Board from 'ricochet-robots/models/board';
+import THREE from 'npm:three';
 
 const {$} = Ember;
 
