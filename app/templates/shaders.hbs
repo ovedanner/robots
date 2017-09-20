@@ -1,0 +1,15 @@
+<div id="vertex-shader">
+  void main() {
+    gl_Position = projectionMatrix *
+      modelViewMatrix *
+      vec4(position,1.0);
+  }
+</div>
+<div id="fragment-shader">
+  void main() {
+    gl_FragColor = vec4(1.0,  // R
+    0.0,  // G
+    1.0,  // B
+    1.0); // A
+  }
+</div>
