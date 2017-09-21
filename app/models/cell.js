@@ -61,8 +61,8 @@ export default Ember.Object.extend({
       x = this.get('x'),
       y = this.get('y'),
       depth = this.get('depth'),
-      vertexShader = $('#vertex-shader').textContent,
-      fragmentShader = $('#fragment-shader').textContent;
+      vertexShader = $('#vertex-shader').text(),
+      fragmentShader = $('#fragment-shader').text();
     let geometry = new THREE.BoxGeometry(size, size, size);
     let material = new THREE.ShaderMaterial({
       vertexShader: vertexShader,

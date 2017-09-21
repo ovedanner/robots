@@ -42,10 +42,6 @@ export default Ember.Object.extend({
       }
     }
 
-    cells.forEach(function(cell, index) {
-
-    });
-
     return cells;
   },
 
