@@ -1,15 +1,17 @@
 <div id="vertex-shader" style="display:none;">
+  varying float x;
+  varying float y;
   void main() {
-    gl_Position = projectionMatrix *
-      modelViewMatrix *
-      vec4(position,1.0);
+    vec4 v = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    x = v.x / v.z;
+    y = v.y / v.z;
+    gl_Position = v;
   }
 </div>
 <div id="fragment-shader" style="display:none">
+  varying float x;
+  varying float y;
   void main() {
-    gl_FragColor = vec4(1.0,  // R
-    0.3,  // G
-    0.2,  // B
-    1.0); // A
+    gl_FragColor = vec4( 0.5 * x + 0.5, - 0.5 * y + 0.5, 0.0, 1.0 );
   }
 </div>
