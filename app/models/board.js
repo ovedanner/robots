@@ -1,4 +1,6 @@
 import Ember from 'ember';
+import Cell from 'ricochet-robots/models/cell';
+import cell from "./cell";
 
 /**
  * Represents a board.
@@ -36,10 +38,15 @@ export default Ember.Object.extend({
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         let xPos = (x * cellSize) + (landscape ? margin : 20),
-          yPos = (y * cellSize) + (landscape ? 20 : margin);
-        context.fillStyle = 'rgb(' + Math.floor(255 - 42.5 * y) + ',' +
-          Math.floor(255 - 42.5 * x) + ',0)';
-        context.fillRect(xPos, yPos, cellSize, cellSize);
+          yPos = (y * cellSize) + (landscape ? 20 : margin),
+          cell = Cell.create({
+            x: xPos,
+            y: yPos,
+            size: cellSize,
+            context: context,
+            number: (x + (y * 8)) + 1
+          });
+        cell.draw();
       }
     }
   }
