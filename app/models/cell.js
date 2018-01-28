@@ -48,11 +48,19 @@ export default Ember.Object.extend({
     let context = this.get('context'),
       x = this.get('x'),
       y = this.get('y'),
-      size = this.get('size');
-    context.fillStyle = 'orange';
-    context.fillRect(x, y, size, size);
+      size = this.get('size'),
+      number = this.get('number');
 
-    this.drawBorders();
+    // Check for the middle of the board. If not,
+    // simply draw the borders.
+    if (number === 120 || number === 121 || number === 136 || number === 137) {
+      context.fillStyle = 'black';
+      context.fillRect(x, y, size, size);
+    } else {
+      context.fillStyle = 'orange';
+      context.fillRect(x, y, size, size);
+      this.drawBorders();
+    }
   },
 
   /**
@@ -73,23 +81,23 @@ export default Ember.Object.extend({
       bottom = (walls & 4) > 0,
       left = (walls & 8) > 0;
 
-    if (top || number <= 8) {
-      wallMultiplier = (number <= 8 ? 2 : 1);
+    if (top || number <= 16) {
+      wallMultiplier = (number <= 16 ? 2 : 1);
       context.fillStyle = wallColor;
       context.fillRect(x, y, size, (wallSize * wallMultiplier));
     }
-    if (right || (number % 8 === 0)) {
-      wallMultiplier = (number % 8 === 0 ? 2 : 1);
+    if (right || (number % 16 === 0)) {
+      wallMultiplier = (number % 16 === 0 ? 2 : 1);
       context.fillStyle = wallColor;
       context.fillRect((x + size) - (wallSize * wallMultiplier), y, (wallSize * wallMultiplier), size);
     }
-    if (bottom || (number > 56)) {
-      wallMultiplier = (number > 56 ? 2 : 1);
+    if (bottom || (number > 240)) {
+      wallMultiplier = (number > 240 ? 2 : 1);
       context.fillStyle = wallColor;
       context.fillRect(x, (y + size) - (wallSize * wallMultiplier), size, (wallSize * wallMultiplier));
     }
-    if (left || (number % 8 === 1)) {
-      wallMultiplier = (number % 8 === 1 ? 2 : 1);
+    if (left || (number % 16 === 1)) {
+      wallMultiplier = (number % 16 === 1 ? 2 : 1);
       context.fillStyle = wallColor;
       context.fillRect(x, y, (wallSize * wallMultiplier), size);
     }

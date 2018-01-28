@@ -28,15 +28,15 @@ export default Ember.Object.extend({
 
     if (fullHeight < fullWidth) {
       margin = (fullWidth - fullHeight) / 2;
-      cellSize = (fullHeight - (fullHeight % 8)) / 8;
+      cellSize = (fullHeight - (fullHeight % 16)) / 16;
     } else {
       landscape = false;
       margin = (fullHeight - fullWidth) / 2;
-      cellSize = (fullWidth - (fullWidth % 8)) / 8;
+      cellSize = (fullWidth - (fullWidth % 16)) / 16;
     }
 
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
         let xPos = (x * cellSize) + (landscape ? margin : 20),
           yPos = (y * cellSize) + (landscape ? 20 : margin),
           cell = Cell.create({
@@ -44,7 +44,7 @@ export default Ember.Object.extend({
             y: yPos,
             size: cellSize,
             context: context,
-            number: (x + (y * 8)) + 1
+            number: (x + (y * 16)) + 1
           });
         cell.draw();
       }
