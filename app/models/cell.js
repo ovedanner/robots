@@ -36,12 +36,17 @@ export default Ember.Object.extend({
   /**
    * Size of the walls.
    */
-  wallSize: 2,
+  wallSize: 4,
+
+  /**
+   * Color of the cell.
+   */
+  cellColor: '#ECDED1',
 
   /**
    * Color of the cell walls.
    */
-  wallColor: 'brown',
+  wallColor: '#7D7B7A',
 
   /**
    * The board layout. Used to determine if this cell contains
@@ -65,7 +70,7 @@ export default Ember.Object.extend({
       context.fillStyle = 'black';
       context.fillRect(x, y, size, size);
     } else {
-      context.fillStyle = 'orange';
+      context.fillStyle = this.get('cellColor');
       context.fillRect(x, y, size, size);
       this.drawBorders();
     }
@@ -88,6 +93,10 @@ export default Ember.Object.extend({
       right = (walls & 2) > 0,
       bottom = (walls & 4) > 0,
       left = (walls & 8) > 0;
+
+    // Background cell borders.
+    context.strokeStyle = '#3B3E40';
+    context.strokeRect(x, y, size, size);
 
     if (top || number <= 16) {
       wallMultiplier = (number <= 16 ? 2 : 1);
