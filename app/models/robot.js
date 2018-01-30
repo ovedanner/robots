@@ -15,6 +15,13 @@ export default Ember.Object.extend({
   cell: null,
 
   /**
+   * Coordinates of the robot.
+   */
+  x: null,
+  y: null,
+  radius: null,
+
+  /**
    * The color of the robot.
    */
   color: null,
@@ -29,6 +36,12 @@ export default Ember.Object.extend({
       yPos = cell.get('y') + (cellSize / 2),
       radius = cellSize / 4,
       context = this.get('context');
+
+    this.setProperties({
+      x: xPos,
+      y: yPos,
+      radius: radius
+    });
 
     context.beginPath();
     context.arc(xPos, yPos, radius, 0, 2 * Math.PI, false);

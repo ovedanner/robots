@@ -19,6 +19,20 @@ export default Ember.Component.extend({
 
     let context = canvas.getContext('2d'),
       board = Board.create({context: context});
+
+    // Register the click handler for the canvas.
+    canvas.addEventListener('click', (event) => {
+      let x = event.pageX,
+        y = event.pageY;
+      board.click(x, y);
+    }, false);
+
     board.draw();
+
+    window.draw = () => {
+      board.update();
+      window.requestAnimationFrame(window.draw);
+    }
+    window.draw();
   },
 });

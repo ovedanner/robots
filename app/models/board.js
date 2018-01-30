@@ -23,6 +23,11 @@ export default Ember.Object.extend({
   robots: [],
 
   /**
+   * Holds the currently selected robot.
+   */
+  selectedRobot: null,
+
+  /**
    * Draws the board and everything on it.
    */
   draw() {
@@ -84,7 +89,7 @@ export default Ember.Object.extend({
       }
     }
 
-    ['yellow', 'red', 'blue', 'green', 'silver'].forEach(function(color) {
+    ['yellow', 'red', 'blue', 'green', 'silver'].forEach((color) => {
       let index = Math.floor((Math.random() * indices.get('length')) + 1),
         cell = cells.get(index);
 
@@ -95,11 +100,50 @@ export default Ember.Object.extend({
         color: color,
         context: context
       });
-      robot.draw();
       robots.pushObject(robot);
     });
 
     this.set('robots', robots);
+  },
+
+  click(x, y) {
+    let currentlySelectedRobot = this.get('selectedRobot');
+
+    // If there already is a robot selected, see which cell is
+    // being clicked (if any). Otherwise, find a selected robot.
+    if (currentlySelectedRobot) {
+      let selectedCell = this.get('cells').find((cell) => {
+        let cellSize = cell.get('size'),
+          xCell = cell.get('x'),
+          yCell = cell.get('y');
+        return (x > xCell && x < (xCell + cellSize)) && (y > yCell && y < (yCell + cellSize));
+      });
+
+      if (selectedCell) {
+        currentlySelectedRobot.set('cell', selectedCell);
+      }
+    } else {
+      let selectedRobot = this.get('robots').find((robot) => {
+        let radius = robot.get('radius'),
+          xCenter = robot.get('x'),
+          yCenter = robot.get('y');
+        return Math.sqrt(Math.pow((x - xCenter), 2) + Math.pow((y - yCenter), 2)) < radius;
+      });
+
+      if (selectedRobot) {
+        this.set('selectedRobot', selectedRobot);
+      }
+    }
+
+  },
+
+  update() {
+    let context = this.get('context');
+    context.save();
+    this.get('robots').forEach((robot) => {
+      robot.draw();
+    });
+    context.restore();
   }
 
 });
