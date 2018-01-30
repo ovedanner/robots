@@ -31,7 +31,7 @@ export default Ember.Object.extend({
    * Note that this doesn't include the outer walls of
    * the board.
    */
-  walls: 15,
+  walls: 0,
 
   /**
    * Size of the walls.
@@ -42,6 +42,12 @@ export default Ember.Object.extend({
    * Color of the cell walls.
    */
   wallColor: 'brown',
+
+  /**
+   * The board layout. Used to determine if this cell contains
+   * a goal and if so, which goal.
+   */
+  layout: null,
 
   /**
    * Draws this cell including its borders.

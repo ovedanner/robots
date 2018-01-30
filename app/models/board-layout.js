@@ -1,9 +1,13 @@
 import Ember from 'ember';
 
+/**
+ * Represents a board layout, which comprises of
+ * the walls of the cells and the goals.
+ */
 export default Ember.Object.extend({
 
   walls: [
-    [0, 0, 0, 0, 2, 10, 0, 0, 0, 2, 10, 0, 0, 0, 4, 0],
+    [0, 0, 0, 0, 2, 8, 0, 0, 0, 2, 8, 0, 0, 0, 4, 0],
     [0, 0, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9, 0 ],
     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 12, 0, 0, 0, 0],
     [2, 12, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1, 0, 0, 0, 4],
