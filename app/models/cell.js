@@ -28,6 +28,8 @@ export default Ember.Object.extend({
    * - right: 2
    * - bottom: 4
    * - left: 8
+   * Note that this doesn't include the outer walls of
+   * the board.
    */
   walls: 15,
 
