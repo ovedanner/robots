@@ -27,12 +27,12 @@ export default Ember.Component.extend({
       board.click(x, y);
     }, false);
 
-    board.draw();
+    board.initialize();
 
     window.draw = () => {
-      board.update();
+      board.draw();
       window.requestAnimationFrame(window.draw);
-    }
+    };
     window.draw();
   },
 });

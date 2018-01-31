@@ -6,6 +6,9 @@ import Ember from 'ember';
  */
 export default Ember.Object.extend({
 
+  /**
+   * Walls of the board.
+   */
   walls: [
     [0, 0, 0, 0, 2, 8, 0, 0, 0, 2, 8, 0, 0, 0, 4, 0],
     [0, 0, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9, 0 ],

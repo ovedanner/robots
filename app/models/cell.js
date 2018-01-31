@@ -49,10 +49,45 @@ export default Ember.Object.extend({
   wallColor: '#7D7B7A',
 
   /**
-   * The board layout. Used to determine if this cell contains
-   * a goal and if so, which goal.
+   * The robot on the cell (if any).
    */
-  layout: null,
+  robot: null,
+
+  /**
+   * Whether or not the cell has a top wall.
+   */
+  hasTopWall: Ember.computed('walls', {
+    get() {
+      return (this.get('walls') & 1) > 0;
+    }
+  }),
+
+  /**
+   * Whether or not the cell has a right wall.
+   */
+  hasRightWall: Ember.computed('walls', {
+    get() {
+      return (this.get('walls') & 2) > 0;
+    }
+  }),
+
+  /**
+   * Whether or not the cell has a bottom wall.
+   */
+  hasBottomWall: Ember.computed('walls', {
+    get() {
+      return (this.get('walls') & 4) > 0;
+    }
+  }),
+
+  /**
+   * Whether or not the cell has a left wall.
+   */
+  hasLeftWall: Ember.computed('walls', {
+    get() {
+      return (this.get('walls') & 8) > 0;
+    }
+  }),
 
   /**
    * Draws this cell including its borders.
@@ -119,5 +154,4 @@ export default Ember.Object.extend({
       context.fillRect(x, y, (wallSize * wallMultiplier), size);
     }
   }
-
 });
