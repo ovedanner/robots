@@ -56,27 +56,27 @@ export default Ember.Object.extend({
   /**
    * Whether or not the cell has a top wall.
    */
-  hasTopWall: Ember.computed('walls', {
+  hasTopWall: Ember.computed('walls', 'number', {
     get() {
-      return (this.get('walls') & 1) > 0;
+      return (this.get('walls') & 1) > 0 || this.get('number') <= 16;
     }
   }),
 
   /**
    * Whether or not the cell has a right wall.
    */
-  hasRightWall: Ember.computed('walls', {
+  hasRightWall: Ember.computed('walls', 'number', {
     get() {
-      return (this.get('walls') & 2) > 0;
+      return (this.get('walls') & 2) > 0 || (this.get('number') % 16 === 0);
     }
   }),
 
   /**
    * Whether or not the cell has a bottom wall.
    */
-  hasBottomWall: Ember.computed('walls', {
+  hasBottomWall: Ember.computed('walls', 'number', {
     get() {
-      return (this.get('walls') & 4) > 0;
+      return (this.get('walls') & 4) > 0 || (this.get('number') > 240);
     }
   }),
 
@@ -85,7 +85,7 @@ export default Ember.Object.extend({
    */
   hasLeftWall: Ember.computed('walls', {
     get() {
-      return (this.get('walls') & 8) > 0;
+      return (this.get('walls') & 8) > 0 || (this.get('number') % 16 === 1);
     }
   }),
 

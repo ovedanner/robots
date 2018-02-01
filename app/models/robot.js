@@ -47,5 +47,13 @@ export default Ember.Object.extend({
     context.arc(xPos, yPos, radius, 0, 2 * Math.PI, false);
     context.fillStyle = this.get('color');
     context.fill();
+  },
+
+  /**
+   * Moves this robot to the given cell.
+   * @param targetCell
+   */
+  moveToCell(targetCell) {
+    this.set('cell', targetCell);
   }
 });

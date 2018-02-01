@@ -115,32 +115,31 @@ export default Ember.Object.extend({
    * @param y
    */
   click(x, y) {
-    let currentlySelectedRobot = this.get('selectedRobot');
+    let selectedRobot = this.get('robots').find((robot) => {
+      let radius = robot.get('radius'),
+        xCenter = robot.get('x'),
+        yCenter = robot.get('y');
+      return Math.sqrt(Math.pow((x - xCenter), 2) + Math.pow((y - yCenter), 2)) < radius;
+    });
 
-    // If there already is a robot selected, see which cell is
-    // being clicked (if any). Otherwise, find a selected robot.
-    if (currentlySelectedRobot) {
-      let selectedCell = this.get('cells').find((cell) => {
-        let cellSize = cell.get('size'),
-          xCell = cell.get('x'),
-          yCell = cell.get('y');
-        return (x > xCell && x < (xCell + cellSize)) && (y > yCell && y < (yCell + cellSize));
-      });
-
-      if (selectedCell && this.canRobotMoveToCell(currentlySelectedRobot, selectedCell)) {
-        currentlySelectedRobot.set('cell', selectedCell);
-        selectedCell.set('robot', currentlySelectedRobot);
-      }
+    if (selectedRobot) {
+      this.set('selectedRobot', selectedRobot);
     } else {
-      let selectedRobot = this.get('robots').find((robot) => {
-        let radius = robot.get('radius'),
-          xCenter = robot.get('x'),
-          yCenter = robot.get('y');
-        return Math.sqrt(Math.pow((x - xCenter), 2) + Math.pow((y - yCenter), 2)) < radius;
-      });
+      let currentlySelectedRobot = this.get('selectedRobot');
 
-      if (selectedRobot) {
-        this.set('selectedRobot', selectedRobot);
+      // If there already is a robot selected, see which cell is
+      // being clicked (if any). Otherwise, find a selected robot.
+      if (currentlySelectedRobot) {
+        let selectedCell = this.get('cells').find((cell) => {
+          let cellSize = cell.get('size'),
+            xCell = cell.get('x'),
+            yCell = cell.get('y');
+          return (x > xCell && x < (xCell + cellSize)) && (y > yCell && y < (yCell + cellSize));
+        });
+
+        if (selectedCell && this.canRobotMoveToCell(currentlySelectedRobot, selectedCell)) {
+          currentlySelectedRobot.moveToCell(selectedCell);
+        }
       }
     }
   },
@@ -172,46 +171,184 @@ export default Ember.Object.extend({
   },
 
   /**
-   * Determines if the given robot can move to the given cell.
+   * Determines if the given robot can move to the given target cell.
    * @param robot
-   * @param cell
+   * @param targetCell
    * @returns {boolean}
    */
-  canRobotMoveToCell(robot, cell) {
+  canRobotMoveToCell(robot, targetCell) {
+    let path = this.getPath(robot, targetCell);
+
+    // No path between the robot and the target
+    // cell? Then we can't move.
+    if (!path) {
+      return false;
+    }
+
+    let cells = path.cells,
+      targetCondition = false,
+      robots = this.get('robots'),
+      cellsWithRobots = robots.map((robot) => {
+        return robot.get('cell');
+      }),
+      currentNumber = robot.get('cell.number'),
+      targetNumber = targetCell.get('number');
+
+    switch (path.direction) {
+      case 'up':
+        // The target cell either needs to have a top wall
+        // or the cell above that needs to have a robot.
+        if (targetCell.get('hasTopWall')) {
+          targetCondition = true;
+        } else {
+          targetCondition = cellsWithRobots.any((cell) => {
+            return cell.get('number') === (targetNumber - 16);
+          });
+        }
+
+        return targetCondition && cells.every((cell) => {
+          let number = cell.get('number');
+          if (number === currentNumber) {
+            return !cell.get('hasTopWall');
+          } else if (number === targetNumber) {
+            return true;
+          } else {
+            return !cell.get('hasTopWall') && !cellsWithRobots.includes(cell);
+          }
+        });
+      case 'down':
+        // The target cell either needs to have a bottom wall
+        // or the cell below that needs to have a robot.
+        if (targetCell.get('hasBottomWall')) {
+          targetCondition = true;
+        } else {
+          targetCondition = cellsWithRobots.any((cell) => {
+            return cell.get('number') === (targetNumber + 16);
+          });
+        }
+
+        return targetCondition && cells.every((cell) => {
+          let number = cell.get('number');
+          if (number === currentNumber) {
+            return !cell.get('hasBottomWall');
+          } else if (number === targetNumber) {
+            return true;
+          } else {
+            return !cell.get('hasBottomWall') && !cellsWithRobots.includes(cell);
+          }
+        });
+      case 'left':
+        // The target cell either needs to have a left wall
+        // or the cell to the left of that one needs to have
+        // a robot.
+        if (targetCell.get('hasLeftWall')) {
+          targetCondition = true;
+        } else {
+          targetCondition = cellsWithRobots.any((cell) => {
+            return cell.get('number') === (targetNumber - 1);
+          });
+        }
+
+        return targetCondition && cells.every((cell) => {
+          let number = cell.get('number');
+          if (number === currentNumber) {
+            return !cell.get('hasLeftWall');
+          } else if (number === targetNumber) {
+            return true;
+          } else {
+            return !cell.get('hasLeftWall') && !cellsWithRobots.includes(cell);
+          }
+        });
+      case 'right':
+        // The target cell either needs to have a right wall
+        // or the cell to the right of that one needs to have
+        // a robot.
+        if (targetCell.get('hasRightWall')) {
+          targetCondition = true;
+        } else {
+          targetCondition = cellsWithRobots.any((cell) => {
+            return cell.get('number') === (targetNumber + 1);
+          });
+        }
+
+        return targetCondition && cells.every((cell) => {
+          let number = cell.get('number');
+          if (number === currentNumber) {
+            return !cell.get('hasRightWall');
+          } else if (number === targetNumber) {
+            return true;
+          } else {
+            return !cell.get('hasRightWall') && !cellsWithRobots.includes(cell);
+          }
+        });
+    }
+  },
+
+  /**
+   * Retrieves cells on the line between the robot and the given
+   * target cell.
+   * @param robot
+   * @param targetCell
+   * @returns {*}
+   */
+  getPath(robot, targetCell) {
     let cells = this.get('cells'),
-      robotCell = robot.get('cell');
+      currentCell = robot.get('cell'),
+      currentNumber = currentCell.get('number'),
+      targetNumber = targetCell.get('number');
 
     // Already on the cell.
-    if (robotCell === cell) {
-      return false;
+    if (currentCell === targetCell) {
+      return null;
     }
 
     // First of all, robots can only move in straight lines.
-    if ((cell.get('x') !== robotCell.get('x')) && (cell.get('y') !== robotCell.get('y'))) {
-      return false;
+    if ((targetCell.get('x') !== currentCell.get('x')) && (targetCell.get('y') !== currentCell.get('y'))) {
+      return null;
     }
 
-    // Now make sure the robot doesn't go through walls or other robots.
-    if (cell.get('y') === robotCell.get('y')) {
-
-      // Robot cell and target cell are on the same row. Check if the target
-      // cell is to the left or to the right.
-      if (robotCell.get('number') > cell.get('number')) {
-        let diff = robotCell.get('number') - cell.get('number');
-        while (diff > 0) {
-          let cellToCheck = cells.get(cell.get('number') - 1);
-          if (!cellToCheck.get('hasLeftWall') && !cellToCheck.get('robot')) {
-            return false;
-          }
-          diff--;
-        }
-        return true;
+    // In this case we're moving horizontally.
+    if (targetCell.get('y') === currentCell.get('y')) {
+      // We're moving right.
+      if (targetNumber > currentNumber) {
+        return {
+          direction: 'right',
+          cells: cells.filter((cell) => {
+            let number = cell.get('number');
+            return currentNumber <= number && number <= targetNumber;
+          })
+        };
+      } else {
+        // We're moving left.
+        return {
+          direction: 'left',
+          cells: cells.filter((cell) => {
+            let number = cell.get('number');
+            return targetNumber <= number && number <= currentNumber;
+          })
+        };
       }
     } else {
-
+      // We're moving vertically.
+      if (targetNumber > currentNumber) {
+        return {
+          direction: 'down',
+          cells: cells.filter((cell) => {
+            let number = cell.get('number');
+            return currentNumber <= number && number <= targetNumber && ((number - currentNumber) % 16 === 0);
+          })
+        };
+      } else {
+        // We're moving upwards.
+        return {
+          direction: 'up',
+          cells: cells.filter((cell) => {
+            let number = cell.get('number');
+            return targetNumber <= number && number <= currentNumber && ((number - targetNumber) % 16 === 0);
+          })
+        };
+      }
     }
-
-    return true;
   }
 
 });
