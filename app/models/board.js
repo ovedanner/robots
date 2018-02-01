@@ -39,12 +39,12 @@ export default Ember.Object.extend({
       cellSize, margin, landscape = true;
 
     if (fullHeight < fullWidth) {
-      margin = (fullWidth - fullHeight) / 2;
-      cellSize = (fullHeight - (fullHeight % 16)) / 16;
+      margin = Math.floor((fullWidth - fullHeight) / 2);
+      cellSize = Math.floor((fullHeight - (fullHeight % 16)) / 16);
     } else {
       landscape = false;
-      margin = (fullHeight - fullWidth) / 2;
-      cellSize = (fullWidth - (fullWidth % 16)) / 16;
+      margin = Math.floor((fullHeight - fullWidth) / 2);
+      cellSize = Math.floor((fullWidth - (fullWidth % 16)) / 16);
     }
 
     // Load the board layout.
