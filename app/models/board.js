@@ -138,7 +138,7 @@ export default Ember.Object.extend({
         });
 
         if (selectedCell && this.canRobotMoveToCell(currentlySelectedRobot, selectedCell)) {
-          currentlySelectedRobot.moveToCell(selectedCell);
+          currentlySelectedRobot.set('targetCell', selectedCell);
         }
       }
     }

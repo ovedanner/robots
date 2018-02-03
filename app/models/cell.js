@@ -90,6 +90,24 @@ export default Ember.Object.extend({
   }),
 
   /**
+   * X coordinate of the middle of the cell.
+   */
+  xCenter: Ember.computed('x', 'size', {
+    get() {
+      return this.get('x') + Math.floor(this.get('size') / 2);
+    }
+  }),
+
+  /**
+   * Y coordinate of the middle of the cell.
+   */
+  yCenter: Ember.computed('y', 'size', {
+    get() {
+      return this.get('y') + Math.floor(this.get('size') / 2);
+    }
+  }),
+
+  /**
    * Draws this cell including its borders.
    */
   draw() {
