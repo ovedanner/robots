@@ -35,8 +35,10 @@ export default Ember.Object.extend({
       color = this.get('color'),
       cell = this.get('cell'),
       cellSize = cell.get('size'),
+      imageSize = Math.floor(cellSize / 1.3),
+      offset = Math.floor((cellSize - imageSize) / 2),
       image = document.getElementById(type + '_' + color);
 
-    context.drawImage(image, cell.get('x'), cell.get('y'), cellSize, cellSize);
+    context.drawImage(image, cell.get('x') + offset, cell.get('y') + offset, imageSize, imageSize);
   }
 })
