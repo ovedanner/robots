@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import Cell from 'ricochet-robots/models/cell';
+import Goal from 'ricochet-robots/models/goal';
 import BoardLayout from 'ricochet-robots/models/board-layout';
 import Robot from 'ricochet-robots/models/robot';
 
@@ -18,6 +19,11 @@ export default Ember.Object.extend({
   cells: [],
 
   /**
+   * Holds all the boards goals.
+   */
+  goals: [],
+
+  /**
    * Holds the robots.
    */
   robots: [],
@@ -33,6 +39,7 @@ export default Ember.Object.extend({
   initialize() {
     let context = this.get('context'),
       cells = [],
+      goals = [],
       canvas = context.canvas,
       fullWidth = canvas.clientWidth - 40,
       fullHeight = canvas.clientHeight - 40,
@@ -49,7 +56,8 @@ export default Ember.Object.extend({
 
     // Load the board layout.
     let layout = BoardLayout.create(),
-      walls = layout.get('walls');
+      walls = layout.get('walls'),
+      rawGoals = layout.get('goals');
 
     // Create the cells.
     for (let y = 0; y < 16; y++) {
@@ -68,8 +76,25 @@ export default Ember.Object.extend({
       }
     }
 
+    // Create the goals.
+    for (let i = 0; i < rawGoals.get('length'); i++) {
+      let goalProperties = rawGoals[i],
+        goalCell = cells[goalProperties.number - 1],
+        goal = Goal.create({
+          context: context,
+          cell: goalCell,
+          type: goalProperties.type,
+          color: goalProperties.color,
+          solved: false
+        });
+      goals.pushObject(goal);
+    }
+
     // Set the cells on the board.
     this.set('cells', cells);
+
+    // Set the goals on the board.
+    this.set('goals', goals);
 
     // Randomly initialize the robots.
     this.initializeRobots();
@@ -150,6 +175,7 @@ export default Ember.Object.extend({
   draw() {
     let context = this.get('context'),
       cells = this.get('cells'),
+      goals = this.get('goals'),
       robots = this.get('robots'),
 
       // We can determine the area to clear based
@@ -162,6 +188,11 @@ export default Ember.Object.extend({
     // First draw the cells.
     cells.forEach((cell) => {
       cell.draw();
+    });
+
+    // Now draw the goals.
+    goals.forEach((goal) => {
+      goal.draw();
     });
 
     // Now draw the robots.
