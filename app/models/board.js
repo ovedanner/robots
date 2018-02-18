@@ -19,11 +19,6 @@ export default Ember.Object.extend({
   cells: [],
 
   /**
-   * Holds all the boards goals.
-   */
-  goals: [],
-
-  /**
    * Holds the robots.
    */
   robots: [],
@@ -34,12 +29,27 @@ export default Ember.Object.extend({
   selectedRobot: null,
 
   /**
+   * The current goal to work towards.
+   */
+  currentGoal: null,
+
+  /**
+   * The fake cell in the middle that holds the current
+   * goal.
+   */
+  cellForCurrentGoal: null,
+
+  /**
+   * The current number of moves to get towards the current goal.
+   */
+  currentNrOfMoves: 0,
+
+  /**
    * Draws the board and everything on it.
    */
   initialize() {
     let context = this.get('context'),
       cells = [],
-      goals = [],
       canvas = context.canvas,
       fullWidth = canvas.clientWidth - 40,
       fullHeight = canvas.clientHeight - 40,
@@ -76,28 +86,36 @@ export default Ember.Object.extend({
       }
     }
 
+    // Create the display goal cell.
+    this.set('cellForCurrentGoal', Cell.create({
+      x: Math.floor(cells[0].get('x') + (cellSize * 7.5)),
+      y: Math.floor(cells[0].get('y') + (cellSize * 7.5)),
+      borders: false,
+      size: cellSize,
+      context: context
+    }));
+
     // Create the goals.
     for (let i = 0; i < rawGoals.get('length'); i++) {
       let goalProperties = rawGoals[i],
         goalCell = cells[goalProperties.number - 1],
         goal = Goal.create({
           context: context,
-          cell: goalCell,
           type: goalProperties.type,
           color: goalProperties.color,
           solved: false
         });
-      goals.pushObject(goal);
+      goalCell.set('goal', goal);
     }
 
     // Set the cells on the board.
     this.set('cells', cells);
 
-    // Set the goals on the board.
-    this.set('goals', goals);
-
     // Randomly initialize the robots.
     this.initializeRobots();
+
+    // Start with a goal.
+    this.setNewGoal();
   },
 
   /**
@@ -144,8 +162,9 @@ export default Ember.Object.extend({
       let radius = robot.get('radius'),
         xCenter = robot.get('x'),
         yCenter = robot.get('y');
+
       return Math.sqrt(Math.pow((x - xCenter), 2) + Math.pow((y - yCenter), 2)) < radius;
-    });
+    }), currentGoal = this.get('cellForCurrentGoal.goal');
 
     if (selectedRobot) {
       this.set('selectedRobot', selectedRobot);
@@ -159,11 +178,21 @@ export default Ember.Object.extend({
           let cellSize = cell.get('size'),
             xCell = cell.get('x'),
             yCell = cell.get('y');
+
           return (x > xCell && x < (xCell + cellSize)) && (y > yCell && y < (yCell + cellSize));
         });
 
+        // Robot can move to the cell. Increment the number of steps and check if we have
+        // reached the goal.
         if (selectedCell && this.canRobotMoveToCell(currentlySelectedRobot, selectedCell)) {
           currentlySelectedRobot.set('targetCell', selectedCell);
+          this.set('currentNrOfMoves', this.get('currentNrOfMoves') + 1);
+
+          if (selectedCell.get('goal') === currentGoal &&
+            currentlySelectedRobot.get('color') === currentGoal.get('color')) {
+            this.set('currentNrOfMoves', 0);
+            this.setNewGoal();
+          }
         }
       }
     }
@@ -175,7 +204,7 @@ export default Ember.Object.extend({
   draw() {
     let context = this.get('context'),
       cells = this.get('cells'),
-      goals = this.get('goals'),
+      cellForCurrentGoal = this.get('cellForCurrentGoal'),
       robots = this.get('robots'),
 
       // We can determine the area to clear based
@@ -183,6 +212,7 @@ export default Ember.Object.extend({
       x = cells[0].get('x'),
       y = cells[0].get('y'),
       size = cells[0].get('size') * 16;
+
     context.clearRect(x, y, size, size);
 
     // First draw the cells.
@@ -190,10 +220,8 @@ export default Ember.Object.extend({
       cell.draw();
     });
 
-    // Now draw the goals.
-    goals.forEach((goal) => {
-      goal.draw();
-    });
+    // Draw the cell that holds the current goal.
+    cellForCurrentGoal.draw();
 
     // Now draw the robots.
     robots.forEach((robot) => {
@@ -380,6 +408,20 @@ export default Ember.Object.extend({
         };
       }
     }
+  },
+
+  /**
+   * Sets a new goal from the remaining goals.
+   */
+  setNewGoal() {
+    let remainingCellsWithGoals = this.get('cells').filter((cell) => {
+      return cell.get('goal') && !cell.get('goal.reached');
+    });
+    let index = Math.floor((Math.random() * remainingCellsWithGoals.get('length')) + 1),
+      newGoal = remainingCellsWithGoals[index].get('goal');
+
+    let cellForCurrentGoal = this.get('cellForCurrentGoal');
+    cellForCurrentGoal.set('goal', newGoal);
   }
 
 });

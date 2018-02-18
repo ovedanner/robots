@@ -54,6 +54,16 @@ export default Ember.Object.extend({
   robot: null,
 
   /**
+   * The goal in this cell (if any).
+   */
+  goal: null,
+
+  /**
+   * Whether or not to even draw borders.
+   */
+  borders: true,
+
+  /**
    * Whether or not the cell has a top wall.
    */
   hasTopWall: Ember.computed('walls', 'number', {
@@ -112,20 +122,35 @@ export default Ember.Object.extend({
    */
   draw() {
     let context = this.get('context'),
+      goal = this.get('goal'),
       x = this.get('x'),
       y = this.get('y'),
       size = this.get('size'),
+      backgroundColor = (goal ? goal.get('backgroundColor') : this.get('cellColor')),
       number = this.get('number');
 
     // Check for the middle of the board. If not,
     // simply draw the borders.
     if (number === 120 || number === 121 || number === 136 || number === 137) {
-      context.fillStyle = 'black';
+      context.fillStyle = 'gray';
       context.fillRect(x, y, size, size);
     } else {
-      context.fillStyle = this.get('cellColor');
+      context.fillStyle = backgroundColor;
       context.fillRect(x, y, size, size);
-      this.drawBorders();
+      if (this.get('borders')) {
+        this.drawBorders();
+      }
+    }
+
+    // If this cell has a goal, draw it.
+    if (goal) {
+      let context = this.get('context'),
+        type = goal.get('type'),
+        imageSize = Math.floor(size / 1.3),
+        offset = Math.floor((size - imageSize) / 2),
+        image = document.getElementById(type);
+
+      context.drawImage(image, x + offset, y + offset, imageSize, imageSize);
     }
   },
 

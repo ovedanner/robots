@@ -1,6 +1,17 @@
 import Ember from 'ember';
 
 /**
+ * Map of color name to actual RGB value.
+ * @type {{blue: string, red: string, yellow: string, green: string}}
+ */
+let colorMap = {
+  blue: '#7EA7D2',
+  red: '#F58C8F',
+  yellow: '#FEF87D',
+  green: '#C3E17E'
+};
+
+/**
  * Represents a goal on the board a robot has to
  * get to.
  */
@@ -21,24 +32,9 @@ export default Ember.Object.extend({
   type: null,
   color: null,
 
-  /**
-   * Cell the goal is in
-   */
-  cell: null,
-
-  /**
-   * Draws the goal in the cell.
-   */
-  draw() {
-    let context = this.get('context'),
-      type = this.get('type'),
-      color = this.get('color'),
-      cell = this.get('cell'),
-      cellSize = cell.get('size'),
-      imageSize = Math.floor(cellSize / 1.3),
-      offset = Math.floor((cellSize - imageSize) / 2),
-      image = document.getElementById(type + '_' + color);
-
-    context.drawImage(image, cell.get('x') + offset, cell.get('y') + offset, imageSize, imageSize);
-  }
+  backgroundColor: Ember.computed('color', {
+    get() {
+      return colorMap[this.get('color')];
+    }
+  })
 })
