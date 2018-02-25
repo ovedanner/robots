@@ -45,6 +45,11 @@ export default Ember.Object.extend({
   currentNrOfMoves: 0,
 
   /**
+   * Holds the last made snapshot we can revert to.
+   */
+  _snapshot: null,
+
+  /**
    * Draws the board and everything on it.
    */
   initialize() {
@@ -408,6 +413,22 @@ export default Ember.Object.extend({
         };
       }
     }
+  },
+
+  /**
+   * Makes a snapshot of the current board state.
+   */
+  snapshot() {
+    let _snapshot = this.getProperties('cells', 'robots', 'selectedRobot',
+      'currentGoal', 'cellForCurrentGoal', 'currentNrOfMoves');
+    this.set('_snapshot', _snapshot);
+  },
+
+  /**
+   * Restores the board to the current board state.
+   */
+  restore() {
+    this.setProperties(this.get('_snapshot'));
   },
 
   /**

@@ -1,13 +1,17 @@
 import Ember from 'ember';
-import Board from 'ricochet-robots/models/board';
 
 /**
  * The component that encompasses the entire board.
  */
-export default Ember.Component.extend({
+const BoardDisplay = Ember.Component.extend({
   tagName: 'canvas',
   attributeBindings: ['id'],
   id: 'board',
+
+  /**
+   * The board to display.
+   */
+  board: null,
 
   /**
    * Initialize the canvas and the board.
@@ -18,7 +22,8 @@ export default Ember.Component.extend({
     canvas.height = window.innerHeight;
 
     let context = canvas.getContext('2d'),
-      board = Board.create({context: context});
+      board = this.get('board');
+    board.set('context', context);
 
     // Register the click handler for the canvas.
     canvas.addEventListener('click', (event) => {
@@ -36,3 +41,9 @@ export default Ember.Component.extend({
     window.draw();
   },
 });
+
+BoardDisplay.reopenClass({
+  positionalParams: ['board']
+});
+
+export default BoardDisplay;
