@@ -121,6 +121,9 @@ export default Ember.Object.extend({
 
     // Start with a goal.
     this.setNewGoal();
+
+    // Snapshot the board.
+    this.snapshot();
   },
 
   /**
@@ -419,6 +422,16 @@ export default Ember.Object.extend({
    * Makes a snapshot of the current board state.
    */
   snapshot() {
+    let cells = this.get('cells'),
+      robots = this.get('robots'),
+      cellForCurrentGoal = this.get('cellForCurrentGoal');
+    cells.forEach((cell) => {
+      cell.snapshot();
+    });
+    robots.forEach((robot) => {
+      robot.snapshot();
+    });
+    cellForCurrentGoal.snapshot();
     let _snapshot = this.getProperties('cells', 'robots', 'selectedRobot',
       'currentGoal', 'cellForCurrentGoal', 'currentNrOfMoves');
     this.set('_snapshot', _snapshot);
@@ -429,6 +442,16 @@ export default Ember.Object.extend({
    */
   restore() {
     this.setProperties(this.get('_snapshot'));
+    let cells = this.get('cells'),
+      robots = this.get('robots'),
+      cellForCurrentGoal = this.get('cellForCurrentGoal');
+    cells.forEach((cell) => {
+      cell.restore();
+    });
+    robots.forEach((robot) => {
+      robot.restore();
+    });
+    cellForCurrentGoal.restore();
   },
 
   /**

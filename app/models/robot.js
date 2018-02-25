@@ -42,6 +42,11 @@ export default Ember.Object.extend({
   speed: 15,
 
   /**
+   * Holds the last made snapshot we can revert to.
+   */
+  _snapshot: null,
+
+  /**
    * Draws the robot.
    */
   draw() {
@@ -150,5 +155,23 @@ export default Ember.Object.extend({
         y: currentY
       }
     }
+  },
+
+  /**
+   * Stores the current robot state.
+   */
+  snapshot() {
+    this.set('_snapshot', {
+      cell: this.get('cell'),
+      targetCell: this.get('targetCell'),
+      moving: this.get('moving')
+    });
+  },
+
+  /**
+   * Restores the robot to the previous state.
+   */
+  restore() {
+    this.setProperties(this.get('_snapshot'))
   }
 });

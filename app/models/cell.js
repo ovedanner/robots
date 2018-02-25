@@ -64,6 +64,11 @@ export default Ember.Object.extend({
   borders: true,
 
   /**
+   * Holds the last made snapshot we can revert to.
+   */
+  _snapshot: null,
+
+  /**
    * Whether or not the cell has a top wall.
    */
   hasTopWall: Ember.computed('walls', 'number', {
@@ -146,7 +151,7 @@ export default Ember.Object.extend({
     if (goal) {
       let context = this.get('context'),
         type = goal.get('type'),
-        imageSize = Math.floor(size / 1.3),
+        imageSize = Math.floor(size / 2),
         offset = Math.floor((size - imageSize) / 2),
         image = document.getElementById(type);
 
@@ -196,5 +201,30 @@ export default Ember.Object.extend({
       context.fillStyle = wallColor;
       context.fillRect(x, y, (wallSize * wallMultiplier), size);
     }
+  },
+
+  /**
+   * Stores the current cell state.
+   */
+  snapshot() {
+    let goal = this.get('goal');
+    if (goal) {
+      goal.snapshot();
+    }
+    this.set('_snapshot', {
+      robot: this.get('robot'),
+      goal: goal
+    });
+  },
+
+  /**
+   * Restores the cell to the previous state.
+   */
+  restore() {
+    let _snapshot = this.get('_snapshot');
+    if (_snapshot.goal) {
+      _snapshot.goal.restore();
+    }
+    this.setProperties(this.get('_snapshot'))
   }
 });

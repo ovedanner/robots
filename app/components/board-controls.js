@@ -12,7 +12,7 @@ const BoardControls = Ember.Component.extend({
   board: null,
 
   actions: {
-    reset() {
+    restoreBoard() {
       this.get('board').restore();
     }
   }
