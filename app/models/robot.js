@@ -32,19 +32,19 @@ export default Ember.Object.extend({
   color: null,
 
   /**
-   * Whether or not the robot is moving.
+   * The path the robot has currently taken (if any).
    */
-  moving: false,
-
-  /**
-   * Speed at which the robot should move.
-   */
-  speed: 15,
+  path: null,
 
   /**
    * Holds the last made snapshot we can revert to.
    */
   _snapshot: null,
+
+  init() {
+    this._super.apply(this, arguments);
+    this.set('path', []);
+  },
 
   /**
    * Draws the robot.
@@ -52,11 +52,30 @@ export default Ember.Object.extend({
   draw() {
     let cell = this.get('cell'),
       cellSize = cell.get('size'),
-      coordinates = this.getCoordinates(),
-      xPos = coordinates.x,
-      yPos = coordinates.y,
       radius = cellSize / 4,
-      context = this.get('context');
+      context = this.get('context'),
+      targetCell = this.get('targetCell'),
+      path = this.get('path'),
+      xPos, yPos;
+
+    if (targetCell) {
+      xPos = targetCell.get('xCenter');
+      yPos = targetCell.get('yCenter');
+      this.setProperties({
+        cell: targetCell,
+        targetCell: null
+      });
+    } else {
+      xPos = cell.get('xCenter');
+      yPos = cell.get('yCenter');
+    }
+
+    // We only add the current cell to the path if it was not the last
+    // cell to be added. Keep in mind that one robot can cross the same
+    // path multiple times in one path.
+    if (path.get('lastObject') !== this.get('cell')) {
+      path.pushObject(this.get('cell'));
+    }
 
     this.setProperties({
       x: xPos,
@@ -64,95 +83,39 @@ export default Ember.Object.extend({
       radius: radius
     });
 
+    // Draw a circle filled with the robot color.
+    context.save();
     context.beginPath();
     context.arc(xPos, yPos, radius, 0, 2 * Math.PI, false);
     context.fillStyle = this.get('color');
     context.fill();
+    context.restore();
+
+    // Draw a border around the circle.
+    context.beginPath();
+    context.arc(xPos, yPos, radius, 0, 2 * Math.PI, false);
+    context.stroke();
   },
 
   /**
-   * Gets the coordinates for the robot.
-   * @returns {{x: *, y: *}}
+   * Draws the path this robot has taken so far.
    */
-  getCoordinates() {
-    let cell = this.get('cell'),
-      targetCell = this.get('targetCell'),
-      moving = this.get('moving');
-
-    if (moving) {
-      // Check if we have reached the target
-      if (this.get('x') === targetCell.get('xCenter') &&
-        this.get('y') === targetCell.get('yCenter')) {
-        this.setProperties({
-          cell: targetCell,
-          targetCell: null,
-          moving: false
-        });
-        return {
-          x: this.get('x'),
-          y: this.get('y')
-        }
-      } else {
-        // We haven't reached the target cell yet, keep moving.
-        return this.moveCoordinates();
-      }
-    } else if (targetCell) {
-      // The robot should move to a new target cell.
-      return this.moveCoordinates();
-    } else {
-      // The robot stays in the cell.
-      return {
-        x: cell.get('xCenter'),
-        y: cell.get('yCenter')
-      }
-    }
-  },
-
-  /**
-   * Checks if the robot has to move and returns the proper coordinates.
-   * @returns {*}
-   */
-  moveCoordinates() {
-    let currentX = this.get('x'),
-      currentY = this.get('y'),
-      targetCell = this.get('targetCell'),
-      targetX = targetCell.get('xCenter'),
-      targetY = targetCell.get('yCenter'),
-      speed = this.get('speed');
-
-    this.set('moving', true);
-
-    // The robot needs to move vertically.
-    if (targetX === currentX) {
-
-      // The robot needs to move upwards.
-      if (targetY < currentY) {
-        let diff = (currentY - targetY);
-        currentY -= (diff < speed ? diff : speed)
-      } else {
-        // The robot needs to move downwards.
-        let diff = (targetY - currentY);
-        currentY += (diff < speed ? diff : speed)
-      }
-
-      return {
-        x: currentX,
-        y: currentY
-      }
-    } else {
-      // The robot needs to move horizontally.
-      if (targetX < currentX) {
-        let diff = (currentX - targetX);
-        currentX -= (diff < speed ? diff : speed)
-      } else {
-        // The robot needs to move downwards.
-        let diff = (targetX - currentX);
-        currentX += (diff < speed ? diff : speed)
-      }
-
-      return {
-        x: currentX,
-        y: currentY
+  drawPath() {
+    let path = this.get('path'),
+      context = this.get('context'),
+      from, to;
+    if (path.get('length') > 1) {
+      for (let i = 0; i < (path.get('length') - 1); i++) {
+        from = path[i];
+        to = path[i + 1];
+        context.save();
+        context.beginPath();
+        context.moveTo(from.get('xCenter'), from.get('yCenter'));
+        context.lineTo(to.get('xCenter'), to.get('yCenter'));
+        context.linewidth = 15;
+        context.strokeStyle = this.get('color');
+        context.stroke();
+        context.restore();
       }
     }
   },
@@ -163,8 +126,7 @@ export default Ember.Object.extend({
   snapshot() {
     this.set('_snapshot', {
       cell: this.get('cell'),
-      targetCell: this.get('targetCell'),
-      moving: this.get('moving')
+      targetCell: this.get('targetCell')
     });
   },
 
@@ -172,6 +134,7 @@ export default Ember.Object.extend({
    * Restores the robot to the previous state.
    */
   restore() {
-    this.setProperties(this.get('_snapshot'))
+    this.setProperties(this.get('_snapshot'));
+    this.set('path', []);
   }
 });

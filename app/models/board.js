@@ -231,6 +231,11 @@ export default Ember.Object.extend({
     // Draw the cell that holds the current goal.
     cellForCurrentGoal.draw();
 
+    // Draw the robot paths.
+    robots.forEach((robot) => {
+      robot.drawPath();
+    });
+
     // Now draw the robots.
     robots.forEach((robot) => {
       robot.draw();
