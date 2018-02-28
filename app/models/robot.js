@@ -104,20 +104,29 @@ export default Ember.Object.extend({
     let path = this.get('path'),
       context = this.get('context'),
       from, to;
+    context.save();
     if (path.get('length') > 1) {
       for (let i = 0; i < (path.get('length') - 1); i++) {
+        // Draw a small circle at the first cell of the path
+        // to indicate that the robot used to be here.
+        if (i === 0) {
+          context.beginPath();
+          context.arc(path[i].get('xCenter'), path[i].get('yCenter'),
+            path[i].get('size') / 8, 0, 2 * Math.PI, false);
+          context.fillStyle = this.get('color');
+          context.fill();
+        }
         from = path[i];
         to = path[i + 1];
-        context.save();
         context.beginPath();
         context.moveTo(from.get('xCenter'), from.get('yCenter'));
         context.lineTo(to.get('xCenter'), to.get('yCenter'));
-        context.linewidth = 15;
+        context.lineWidth = 4;
         context.strokeStyle = this.get('color');
         context.stroke();
-        context.restore();
       }
     }
+    context.restore();
   },
 
   /**
