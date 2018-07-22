@@ -131,8 +131,14 @@ export default Ember.Object.extend({
       x = this.get('x'),
       y = this.get('y'),
       size = this.get('size'),
-      backgroundColor = (goal ? goal.get('backgroundColor') : this.get('cellColor')),
+      backgroundColor = this.get('cellColor'),
       number = this.get('number');
+
+    // The color to draw depends on whether there is a goal and if that
+    // goal is the current one.
+    if (goal && goal.get('current')) {
+      backgroundColor = goal.get('backgroundColor');
+    }
 
     // Check for the middle of the board. If not,
     // simply draw the borders.
@@ -145,17 +151,6 @@ export default Ember.Object.extend({
       if (this.get('borders')) {
         this.drawBorders();
       }
-    }
-
-    // If this cell has a goal, draw it.
-    if (goal) {
-      let context = this.get('context'),
-        type = goal.get('type'),
-        imageSize = Math.floor(size / 2),
-        offset = Math.floor((size - imageSize) / 2),
-        image = document.getElementById(type);
-
-      context.drawImage(image, x + offset, y + offset, imageSize, imageSize);
     }
   },
 

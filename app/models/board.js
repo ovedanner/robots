@@ -19,6 +19,11 @@ export default Ember.Object.extend({
   cells: [],
 
   /**
+   * Holds all the board's goals.
+   */
+  goals: [],
+
+  /**
    * Holds the robots.
    */
   robots: [],
@@ -32,12 +37,6 @@ export default Ember.Object.extend({
    * The current goal to work towards.
    */
   currentGoal: null,
-
-  /**
-   * The fake cell in the middle that holds the current
-   * goal.
-   */
-  cellForCurrentGoal: null,
 
   /**
    * The current number of moves to get towards the current goal.
@@ -55,6 +54,7 @@ export default Ember.Object.extend({
   initialize() {
     let context = this.get('context'),
       cells = [],
+      goals = [],
       canvas = context.canvas,
       fullWidth = canvas.clientWidth - 40,
       fullHeight = canvas.clientHeight - 40,
@@ -91,15 +91,6 @@ export default Ember.Object.extend({
       }
     }
 
-    // Create the display goal cell.
-    this.set('cellForCurrentGoal', Cell.create({
-      x: Math.floor(cells[0].get('x') + (cellSize * 7.5)),
-      y: Math.floor(cells[0].get('y') + (cellSize * 7.5)),
-      borders: false,
-      size: cellSize,
-      context: context
-    }));
-
     // Create the goals.
     for (let i = 0; i < rawGoals.get('length'); i++) {
       let goalProperties = rawGoals[i],
@@ -110,11 +101,15 @@ export default Ember.Object.extend({
           color: goalProperties.color,
           solved: false
         });
+      goals.pushObject(goal);
       goalCell.set('goal', goal);
     }
 
-    // Set the cells on the board.
-    this.set('cells', cells);
+    // Set the cells and goals on the board.
+    this.setProperties({
+      cells: cells,
+      goals: goals
+    });
 
     // Randomly initialize the robots.
     this.initializeRobots();
@@ -172,7 +167,7 @@ export default Ember.Object.extend({
         yCenter = robot.get('y');
 
       return Math.sqrt(Math.pow((x - xCenter), 2) + Math.pow((y - yCenter), 2)) < radius;
-    }), currentGoal = this.get('cellForCurrentGoal.goal');
+    }), currentGoal = this.get('currentGoal');
 
     if (selectedRobot) {
       this.set('selectedRobot', selectedRobot);
@@ -212,7 +207,6 @@ export default Ember.Object.extend({
     let context = this.get('context'),
       cells = this.get('cells'),
       selectedRobot = this.get('selectedRobot'),
-      cellForCurrentGoal = this.get('cellForCurrentGoal'),
       robots = this.get('robots'),
 
       // We can determine the area to clear based
@@ -227,9 +221,6 @@ export default Ember.Object.extend({
     cells.forEach((cell) => {
       cell.draw();
     });
-
-    // Draw the cell that holds the current goal.
-    cellForCurrentGoal.draw();
 
     // Draw the robot paths. Make sure to draw the
     // path of the selected robot last.
@@ -435,16 +426,16 @@ export default Ember.Object.extend({
   snapshot() {
     let cells = this.get('cells'),
       robots = this.get('robots'),
-      cellForCurrentGoal = this.get('cellForCurrentGoal');
+      currentGoal = this.get('currentGoal');
     cells.forEach((cell) => {
       cell.snapshot();
     });
     robots.forEach((robot) => {
       robot.snapshot();
     });
-    cellForCurrentGoal.snapshot();
+    currentGoal.snapshot();
     let _snapshot = this.getProperties('cells', 'robots', 'selectedRobot',
-      'currentGoal', 'cellForCurrentGoal', 'currentNrOfMoves');
+      'currentGoal', 'currentGoal', 'currentNrOfMoves');
     this.set('_snapshot', _snapshot);
   },
 
@@ -455,36 +446,41 @@ export default Ember.Object.extend({
     this.setProperties(this.get('_snapshot'));
     let cells = this.get('cells'),
       robots = this.get('robots'),
-      cellForCurrentGoal = this.get('cellForCurrentGoal');
+      currentGoal = this.get('currentGoal');
     cells.forEach((cell) => {
       cell.restore();
     });
     robots.forEach((robot) => {
       robot.restore();
     });
-    cellForCurrentGoal.restore();
+    currentGoal.restore();
   },
 
   /**
    * Sets a new goal from the remaining goals.
    */
   setNewGoal() {
+    let currentGoal = this.get('currentGoal');
+    if (currentGoal) {
+      currentGoal.set('current', false);
+    }
+
     // Get all goals that have not been reached.
-    let remainingCellsWithGoals = this.get('cells').filter((cell) => {
-      return cell.get('goal') && !cell.get('goal.reached');
+    let remainingGoals = this.get('goals').filter((goal) => {
+      return !goal.get('reached');
     });
 
     // Is there a goal left?
-    if (remainingCellsWithGoals.get('length') < 1) {
+    if (currentGoal && remainingGoals.get('length') < 1) {
       return false;
     }
 
     // If there is, randomly draw one.
-    let index = Math.floor((Math.random() * remainingCellsWithGoals.get('length'))),
-      newGoal = remainingCellsWithGoals[index].get('goal');
+    let index = Math.floor((Math.random() * remainingGoals.get('length'))),
+      newGoal = remainingGoals[index];
 
-    let cellForCurrentGoal = this.get('cellForCurrentGoal');
-    cellForCurrentGoal.set('goal', newGoal);
+    newGoal.set('current', true);
+    this.set('currentGoal', newGoal);
 
     return true;
   },

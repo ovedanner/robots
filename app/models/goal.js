@@ -27,6 +27,11 @@ export default Ember.Object.extend({
   reached: false,
 
   /**
+   * Whether this goal is the current one.
+   */
+  current: false,
+
+  /**
    * Goal type and color.
    */
   type: null,
