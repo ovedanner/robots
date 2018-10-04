@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 
 /**
  * Represents a robot on the board.
  */
-export default Ember.Object.extend({
+export default EmberObject.extend({
   /**
    * Contains the rendering context.
    */

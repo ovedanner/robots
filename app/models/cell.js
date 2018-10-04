@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import EmberObject, { computed } from '@ember/object';
 
 /**
  * Represents a cell on the board.
  */
-export default Ember.Object.extend({
+export default EmberObject.extend({
   /**
    * Contains the rendering context.
    */
@@ -71,7 +71,7 @@ export default Ember.Object.extend({
   /**
    * Whether or not the cell has a top wall.
    */
-  hasTopWall: Ember.computed('walls', 'number', {
+  hasTopWall: computed('walls', 'number', {
     get() {
       return (this.get('walls') & 1) > 0 || this.get('number') <= 16;
     }
@@ -80,7 +80,7 @@ export default Ember.Object.extend({
   /**
    * Whether or not the cell has a right wall.
    */
-  hasRightWall: Ember.computed('walls', 'number', {
+  hasRightWall: computed('walls', 'number', {
     get() {
       return (this.get('walls') & 2) > 0 || (this.get('number') % 16 === 0);
     }
@@ -89,7 +89,7 @@ export default Ember.Object.extend({
   /**
    * Whether or not the cell has a bottom wall.
    */
-  hasBottomWall: Ember.computed('walls', 'number', {
+  hasBottomWall: computed('walls', 'number', {
     get() {
       return (this.get('walls') & 4) > 0 || (this.get('number') > 240);
     }
@@ -98,7 +98,7 @@ export default Ember.Object.extend({
   /**
    * Whether or not the cell has a left wall.
    */
-  hasLeftWall: Ember.computed('walls', {
+  hasLeftWall: computed('walls', {
     get() {
       return (this.get('walls') & 8) > 0 || (this.get('number') % 16 === 1);
     }
@@ -107,7 +107,7 @@ export default Ember.Object.extend({
   /**
    * X coordinate of the middle of the cell.
    */
-  xCenter: Ember.computed('x', 'size', {
+  xCenter: computed('x', 'size', {
     get() {
       return this.get('x') + Math.floor(this.get('size') / 2);
     }
@@ -116,7 +116,7 @@ export default Ember.Object.extend({
   /**
    * Y coordinate of the middle of the cell.
    */
-  yCenter: Ember.computed('y', 'size', {
+  yCenter: computed('y', 'size', {
     get() {
       return this.get('y') + Math.floor(this.get('size') / 2);
     }

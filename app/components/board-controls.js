@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import Component from '@ember/component';
 
 /**
  * Control panel for the board.
  */
-const BoardControls = Ember.Component.extend({
+const BoardControls = Component.extend({
   classNames: ['board-controls'],
 
   /**

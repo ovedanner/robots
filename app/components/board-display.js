@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import Component from '@ember/component';
 
 /**
  * The component that encompasses the entire board.
  */
-const BoardDisplay = Ember.Component.extend({
+const BoardDisplay = Component.extend({
   tagName: 'canvas',
   attributeBindings: ['id'],
   id: 'board',

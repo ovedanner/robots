@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
 import Cell from 'ricochet-robots/models/cell';
 import Goal from 'ricochet-robots/models/goal';
 import BoardLayout from 'ricochet-robots/models/board-layout';
@@ -7,7 +7,7 @@ import Robot from 'ricochet-robots/models/robot';
 /**
  * Represents a board.
  */
-export default Ember.Object.extend({
+export default EmberObject.extend({
   /**
    * Contains the rendering context.
    */
@@ -16,17 +16,17 @@ export default Ember.Object.extend({
   /**
    * Holds all the board's cells.
    */
-  cells: [],
+  cells: null,
 
   /**
    * Holds all the board's goals.
    */
-  goals: [],
+  goals: null,
 
   /**
    * Holds the robots.
    */
-  robots: [],
+  robots: null,
 
   /**
    * Holds the currently selected robot.
@@ -501,7 +501,7 @@ export default Ember.Object.extend({
 
     // Set a new goal if possible.
     if (!this.setNewGoal()) {
-      console.log('FINISHED!!!');
+      //console.log('FINISHED!!!');
     } else {
       // Take a new snapshot to reminder where we were.
       this.snapshot();

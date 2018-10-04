@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import EmberObject, { computed } from '@ember/object';
 
 /**
  * Map of color name to actual RGB value.
@@ -15,7 +15,7 @@ const colorMap = {
  * Represents a goal on the board a robot has to
  * get to.
  */
-export default Ember.Object.extend({
+export default EmberObject.extend({
   /**
    * Contains the rendering context.
    */
@@ -45,7 +45,7 @@ export default Ember.Object.extend({
   /**
    * Returns the real background color for the goal.
    */
-  backgroundColor: Ember.computed('color', {
+  backgroundColor: computed('color', {
     get() {
       return colorMap[this.get('color')];
     }
