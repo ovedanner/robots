@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 
 /**
  * The component that encompasses the entire board.
@@ -7,6 +8,11 @@ const BoardDisplay = Component.extend({
   tagName: 'canvas',
   attributeBindings: ['id'],
   id: 'board',
+
+  /**
+   * Board drawing service.
+   */
+  drawService: service('draw'),
 
   /**
    * The board to display.
@@ -23,7 +29,9 @@ const BoardDisplay = Component.extend({
 
     let context = canvas.getContext('2d'),
       board = this.get('board');
-    board.set('context', context);
+
+    this.drawService.set('context', context);
+    this.drawService.initialize(board);
 
     // Register the click handler for the canvas.
     canvas.addEventListener('click', (event) => {
@@ -32,10 +40,8 @@ const BoardDisplay = Component.extend({
       board.click(x, y);
     }, false);
 
-    board.initialize();
-
     window.draw = () => {
-      board.draw();
+      this.drawService.draw();
       window.requestAnimationFrame(window.draw);
     };
     window.draw();

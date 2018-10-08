@@ -2,7 +2,7 @@
 
 module.exports = function(environment) {
   let ENV = {
-    modulePrefix: 'ricochet-robots',
+    modulePrefix: 'robots',
     environment,
     rootURL: '/',
     locationType: 'auto',

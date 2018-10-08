@@ -1,158 +1,35 @@
-import EmberObject from '@ember/object';
-import Cell from 'ricochet-robots/models/cell';
-import Goal from 'ricochet-robots/models/goal';
-import BoardLayout from 'ricochet-robots/models/board-layout';
-import Robot from 'ricochet-robots/models/robot';
+import DS from 'ember-data';
+import BoardState from './board-state';
 
 /**
  * Represents a board.
  */
-export default EmberObject.extend({
-  /**
-   * Contains the rendering context.
-   */
-  context: null,
+export default DS.Model.extend({
 
   /**
-   * Holds all the board's cells.
+   * Cells of the board, defined by their walls.
    */
-  cells: null,
+  cells: DS.attr(),
 
   /**
-   * Holds all the board's goals.
+   * Goal cells of the board
    */
-  goals: null,
+  goals: DS.attr(),
 
   /**
-   * Holds the robots.
+   * Board state.
    */
-  robots: null,
+  state: null,
 
   /**
-   * Holds the currently selected robot.
+   * Instantiate a new board state.
    */
-  selectedRobot: null,
+  init() {
+    this._super(...arguments);
 
-  /**
-   * The current goal to work towards.
-   */
-  currentGoal: null,
-
-  /**
-   * The current number of moves to get towards the current goal.
-   */
-  currentNrOfMoves: 0,
-
-  /**
-   * Holds the last made snapshot we can revert to.
-   */
-  _snapshot: null,
-
-  /**
-   * Draws the board and everything on it.
-   */
-  initialize() {
-    let context = this.get('context'),
-      cells = [],
-      goals = [],
-      canvas = context.canvas,
-      fullWidth = canvas.clientWidth - 40,
-      fullHeight = canvas.clientHeight - 40,
-      cellSize, margin, landscape = true;
-
-    if (fullHeight < fullWidth) {
-      margin = Math.floor((fullWidth - fullHeight) / 2);
-      cellSize = Math.floor((fullHeight - (fullHeight % 16)) / 16);
-    } else {
-      landscape = false;
-      margin = Math.floor((fullHeight - fullWidth) / 2);
-      cellSize = Math.floor((fullWidth - (fullWidth % 16)) / 16);
-    }
-
-    // Load the board layout.
-    let layout = BoardLayout.create(),
-      walls = layout.get('walls'),
-      rawGoals = layout.get('goals');
-
-    // Create the cells.
-    for (let y = 0; y < 16; y++) {
-      for (let x = 0; x < 16; x++) {
-        let xPos = (x * cellSize) + (landscape ? margin : 20),
-          yPos = (y * cellSize) + (landscape ? 20 : margin),
-          cell = Cell.create({
-            x: xPos,
-            y: yPos,
-            walls: walls[y][x],
-            size: cellSize,
-            context: context,
-            number: (x + (y * 16)) + 1
-          });
-        cells.pushObject(cell);
-      }
-    }
-
-    // Create the goals.
-    for (let i = 0; i < rawGoals.get('length'); i++) {
-      let goalProperties = rawGoals[i],
-        goalCell = cells[goalProperties.number - 1],
-        goal = Goal.create({
-          context: context,
-          type: goalProperties.type,
-          color: goalProperties.color,
-          solved: false
-        });
-      goals.pushObject(goal);
-      goalCell.set('goal', goal);
-    }
-
-    // Set the cells and goals on the board.
-    this.setProperties({
-      cells: cells,
-      goals: goals
-    });
-
-    // Randomly initialize the robots.
-    this.initializeRobots();
-
-    // Start with a goal.
-    this.setNewGoal();
-
-    // Snapshot the board.
-    this.snapshot();
-  },
-
-  /**
-   * Initializes the robots to random cells of the board.
-   */
-  initializeRobots() {
-    let context = this.get('context'),
-      cells = this.get('cells'),
-      indices = [],
-      robots = [];
-
-    // Make sure a robot can never be in the center of the board.
-    for (let i = 0; i < 256; i++) {
-      if (i !== 119 && i !== 120 && i !== 135 && i !== 136) {
-        indices.push(i);
-      }
-    }
-
-    ['yellow', 'red', 'blue', 'green', 'silver'].forEach((color) => {
-      let index = Math.floor((Math.random() * indices.get('length'))),
-        cell = cells.get(indices.get(index));
-
-      // Remove the index, so no two robots will begin in the same spot.
-      indices.removeObject(index);
-      let robot = Robot.create({
-        cell: cell,
-        color: color,
-        context: context
-      });
-      cell.set('robot', robot);
-      robots.pushObject(robot);
-    });
-
-    this.set('robots', robots);
+    this.set('state', BoardState.create({
+      board: this,
+    }));
   },
 
   /**
@@ -198,45 +75,6 @@ export default EmberObject.extend({
         }
       }
     }
-  },
-
-  /**
-   * Draws the board and everything on it.
-   */
-  draw() {
-    let context = this.get('context'),
-      cells = this.get('cells'),
-      selectedRobot = this.get('selectedRobot'),
-      robots = this.get('robots'),
-
-      // We can determine the area to clear based
-      // on the first cell.
-      x = cells[0].get('x'),
-      y = cells[0].get('y'),
-      size = cells[0].get('size') * 16;
-
-    context.clearRect(x, y, size, size);
-
-    // First draw the cells.
-    cells.forEach((cell) => {
-      cell.draw();
-    });
-
-    // Draw the robot paths. Make sure to draw the
-    // path of the selected robot last.
-    robots.forEach((robot) => {
-      if (robot !== selectedRobot) {
-        robot.drawPath();
-      }
-    });
-    if (selectedRobot) {
-      selectedRobot.drawPath();
-    }
-
-    // Now draw the robots.
-    robots.forEach((robot) => {
-      robot.draw();
-    });
   },
 
   /**
