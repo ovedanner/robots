@@ -169,7 +169,7 @@ export default Service.extend({
 
       if (top) {
         context.fillStyle = wallColor;
-        context.fillRect(x, y, size, 1);
+        context.fillRect(x, y, size, wallSize);
       }
       if (right) {
         context.fillStyle = wallColor;
