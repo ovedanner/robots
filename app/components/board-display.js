@@ -23,25 +23,25 @@ const BoardDisplay = Component.extend({
    * Initialize the canvas and the board.
    */
   didInsertElement() {
-    let canvas = document.querySelector('canvas');
+    const canvas = document.querySelector('canvas');
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let context = canvas.getContext('2d'),
-      board = this.get('board');
+    const context = canvas.getContext('2d'),
+      board = this.get('board'),
+      draw = this.drawService;
 
-    this.drawService.set('context', context);
-    this.drawService.initialize(board);
+    draw.set('context', context);
+    draw.initialize(board);
 
     // Register the click handler for the canvas.
     canvas.addEventListener('click', (event) => {
-      let x = event.pageX,
-        y = event.pageY;
-      board.click(x, y);
+      draw.click(event.pageX, event.pageY);
     }, false);
 
     window.draw = () => {
-      this.drawService.draw();
+      draw.draw();
       window.requestAnimationFrame(window.draw);
     };
     window.draw();

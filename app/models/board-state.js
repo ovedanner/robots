@@ -32,13 +32,39 @@ export default EmberObject.extend({
   currentGoal: null,
 
   /**
+   * The goals that have been completed.
+   */
+  completedGoals: null,
+
+  /**
+   * Holds the currently selected robot.
+   */
+  selectedRobot: null,
+
+  /**
    * Initialize the robots the random spots on the board.
    */
   init() {
     this._super(...arguments);
 
+    // Reset properties.
+    this.reset();
+
     // Initialize the robots.
     this.initializeRobots();
+  },
+
+  /**
+   * Reset state properties.
+   */
+  reset() {
+    this.setProperties({
+      robots: [],
+      moves: [],
+      playStarted: false,
+      completedGoals: [],
+      selectedRobot: null,
+    });
   },
 
   /**
@@ -65,7 +91,7 @@ export default EmberObject.extend({
     }
 
     ['yellow', 'red', 'blue', 'green', 'silver'].forEach((color) => {
-      let index = Math.floor((Math.random() * positions.length)),
+      let index = Math.floor(Math.random() * positions.length),
         position = positions[index];
 
       // Remove the position, so no two robots will begin in the same spot.
@@ -84,7 +110,45 @@ export default EmberObject.extend({
     this.set('robots', robots);
   },
 
-  startGame() {
+  /**
+   * Starts a new game.
+   */
+  startNewGame() {
+    // Set a new goal.
+    this.set('currentGoal', this.getNextGoal());
+  },
 
-  }
+  /**
+   * Retrieves the next goal to solve.
+   */
+  getNextGoal() {
+    const goals = this.board.goals,
+      possibleGoals = goals.unshiftObjects(this.completedGoals),
+      index = Math.floor(Math.random() * possibleGoals.length);
+
+   return possibleGoals[index];
+  },
+
+  /**
+   * Called when a cell is clicked.
+   */
+  click(row, column) {
+    // First determine if a robot or a target cell is clicked.
+    const clickedRobot = this.robots.find((robot) => {
+      return robot.position.row === row && robot.position.column === column;
+    }),
+      selectedRobot = this.selectedRobot;
+
+    if (clickedRobot) {
+     // Clicked a cell with a robot.
+      this.selectedRobot = clickedRobot;
+    } else if (selectedRobot) {
+      // Clicked on a cell without robot. If a robot is selected
+      // and the move is allowed, update the position of the robot.
+      selectedRobot.position = {
+        row: row,
+        column: column,
+      }
+    }
+  },
 });

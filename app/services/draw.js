@@ -45,11 +45,15 @@ export default Service.extend({
    * Holds the board to draw.
    */
   board: null,
+  nrRows: null,
+  nrColumns: null,
 
   /**
    * Caches cell coordinates for easy lookup.
    */
-  cellCoordinates: [],
+  cellCoordinates: null,
+  topLeft: null,
+  bottomRight: null,
 
   /**
    * Intializes the service with the given
@@ -83,6 +87,16 @@ export default Service.extend({
     this.setProperties({
       board: board,
       cellCoordinates: cellCoordinates,
+      topLeft: {
+        x: xStart,
+        y: yStart,
+      },
+      bottomRight: {
+        x: xStart + (nrColumns * cellSize),
+        y: yStart + (nrRows * cellSize),
+      },
+      nrRows: nrRows,
+      nrColumns: nrColumns,
     });
   },
 
@@ -94,6 +108,8 @@ export default Service.extend({
     const board = this.board,
       state = board.state,
       cells = board.cells,
+      nrRows = cells.length,
+      nrColumns = nrRows,
       context = this.context,
       canvas = context.canvas;
 
@@ -110,6 +126,15 @@ export default Service.extend({
 
     // Draw the goal, the robots and the paths.
     if (state) {
+      if (state.currentGoal) {
+        const number = state.currentGoal.number,
+          rowIdx = Math.floor(number / nrRows),
+          columnIdx = number % nrColumns,
+          coordinates = this.cellCoordinates[rowIdx][columnIdx];
+
+        this.drawGoal(state.currentGoal, coordinates.x, coordinates.y);
+      }
+
       state.robots.forEach((robot) => {
         this.drawRobot(robot);
       });
@@ -159,6 +184,18 @@ export default Service.extend({
         context.fillRect(x, y, wallSize, size);
       }
     }
+  },
+
+  /**
+   * Draws the given goal.
+   */
+  drawGoal(goal, x, y) {
+    let context = this.context,
+      size = this.cellSize,
+      backgroundColor = goal.color;
+
+    context.fillStyle = backgroundColor;
+    context.fillRect(x, y, size, size);
   },
 
   /**
@@ -219,5 +256,22 @@ export default Service.extend({
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI, false);
     context.stroke();
-  }
+  },
+
+  /**
+   * Click handler for the canvas.
+   */
+  click(x, y) {
+    const topLeft = this.topLeft,
+      bottomRight = this.bottomRight;
+
+    // First check if the click is actually on the board.
+    if (x >= topLeft.x && x <= bottomRight.x && y >= topLeft.y && y <= bottomRight.y) {
+      // Translate the click coordinates into cell indices and let the state handle it.
+      const rowIdx = Math.floor((y - topLeft.y) / this.cellSize),
+        columnIdx = Math.floor((x - topLeft.x) / this.cellSize);
+
+      this.board.state.click(rowIdx, columnIdx);
+    }
+  },
 });

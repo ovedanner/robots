@@ -13,7 +13,10 @@ const BoardControls = Component.extend({
 
   actions: {
     restoreBoard() {
-      this.get('board').restore();
+    },
+
+    startNewGame() {
+      this.board.startNewGame();
     }
   }
 });

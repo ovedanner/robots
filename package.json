@@ -2,7 +2,7 @@
   "name": "robots",
   "version": "0.1.0",
   "private": true,
-  "description": "Digital version of the Ricochet Robots board game",
+  "description": "Web version of the Ricochet Robots board game",
   "license": "MIT",
   "author": "Ove Danner",
   "directories": {
