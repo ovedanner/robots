@@ -135,6 +135,11 @@ export default Service.extend({
         this.drawGoal(state.currentGoal, coordinates.x, coordinates.y);
       }
 
+      if (state.moves.length > 0) {
+        this.drawRobotStart(state.start);
+        this.drawMoves(state.moves);
+      }
+
       state.robots.forEach((robot) => {
         this.drawRobot(robot);
       });
@@ -194,49 +199,71 @@ export default Service.extend({
       size = this.cellSize,
       backgroundColor = goal.color;
 
-    context.fillStyle = backgroundColor;
+    context.fillStyle = colorMap[backgroundColor];
     context.fillRect(x, y, size, size);
   },
 
   /**
-   * Draws the path the given robot has taken so far.
+   * Draws robot placeholders to show the initial positions.
    */
-  //drawRobotPath(robot) {
-  //  let path = robot.path,
-  //    context = this.context,
-  //    from,
-  //    to;
+  drawRobotStart(start) {
+    const size = this.cellSize,
+      radius = size / 8,
+      context = this.context,
+      cellCoordinates = this.cellCoordinates;
 
-  //  context.save();
-  //  if (path.get('length') > 1) {
-  //    for (let i = 0; i < (path.get('length') - 1); i++) {
-  //      // Draw a small circle at the first cell of the path
-  //      // to indicate that the robot used to be here.
-  //      if (i === 0) {
-  //        context.beginPath();
-  //        context.arc(path[i].get('xCenter'), path[i].get('yCenter'),
-  //          path[i].get('size') / 8, 0, 2 * Math.PI, false);
-  //        context.fillStyle = robot.color;
-  //        context.fill();
-  //      }
-  //      from = path[i];
-  //      to = path[i + 1];
-  //      context.beginPath();
-  //      context.moveTo(from.get('xCenter'), from.get('yCenter'));
-  //      context.lineTo(to.get('xCenter'), to.get('yCenter'));
-  //      context.lineWidth = 4;
-  //      context.strokeStyle = robot.color;
-  //      context.stroke();
-  //    }
-  //  }
-  //  context.restore();
-  //},
+    context.save();
+
+    start.forEach((robot) => {
+      const pos = robot.position,
+        coordinates = cellCoordinates[pos.row][pos.column],
+        x = coordinates.x + (size / 2),
+        y = coordinates.y + (size / 2);
+
+      context.beginPath();
+      context.arc(x, y, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = robot.color;
+      context.fill();
+    });
+
+    context.restore();
+  },
+
+  /**
+   * Draws the given moves.
+   */
+  drawMoves(moves) {
+    let size = this.cellSize,
+      context = this.context,
+      cellCoordinates = this.cellCoordinates;
+
+    context.save();
+
+    moves.forEach((move) => {
+      const from = cellCoordinates[move.from.row][move.from.column],
+        to = cellCoordinates[move.to.row][move.to.column],
+        color = move.robot.color,
+        fromX = from.x + (size / 2),
+        fromY = from.y + (size / 2),
+        toX = to.x + (size / 2),
+        toY = to.y + (size / 2);
+
+      context.beginPath();
+      context.moveTo(fromX, fromY);
+      context.lineTo(toX, toY);
+      context.lineWidth = 4;
+      context.strokeStyle = color;
+      context.stroke();
+    });
+
+    context.restore();
+  },
 
   /**
    * Draws the given robot.
    */
   drawRobot(robot) {
-    let pos = robot.position,
+    const pos = robot.position,
       size = this.cellSize,
       radius = size / 4,
       context = this.context,

@@ -1,6 +1,6 @@
 import DS from 'ember-data';
-import BoardState from './board-state';
 import { alias } from '@ember/object/computed';
+import { computed } from '@ember/object';
 
 /**
  * Represents a board.
@@ -18,6 +18,26 @@ export default DS.Model.extend({
   goals: DS.attr(),
 
   /**
+   * Returns an array of column cells instead of row cells.
+   */
+  columnCells: computed('cells', function() {
+    const cells = this.cells;
+    let columns = [];
+
+    for (let i = 0; i < cells.length; i++) {
+      let column = [];
+
+      for (let j = 0; j < cells.length; j++) {
+        column.push(cells[j][i]);
+      }
+
+      columns.push(column);
+    }
+
+    return columns;
+  }),
+
+  /**
    * Board state.
    */
   state: null,
@@ -33,7 +53,7 @@ export default DS.Model.extend({
   init() {
     this._super(...arguments);
 
-    this.set('state', BoardState.create({
+    this.set('state', this.store.createRecord('board-state', {
       board: this,
     }));
   },
