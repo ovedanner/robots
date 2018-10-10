@@ -1,0 +1,12 @@
+.start {
+  max-width:500px;
+  margin-top:50px;
+  a {
+    text-decoration:none;
+    color:$white;
+  }
+  .button-wrapper {
+    background-color:$orange;
+    @include border-radius($radius: 4px)
+  }
+}
