@@ -1,5 +1,5 @@
 import DS from 'ember-data';
-import { alias } from '@ember/object/computed';
+import { alias, readOnly } from '@ember/object/computed';
 import { computed } from '@ember/object';
 
 /**
@@ -36,6 +36,12 @@ export default DS.Model.extend({
 
     return columns;
   }),
+
+  /**
+   * We assume square boards with at least one cell.
+   */
+  nrRows: readOnly('cells.length'),
+  nrColumns: readOnly('cells.0.length'),
 
   /**
    * Board state.

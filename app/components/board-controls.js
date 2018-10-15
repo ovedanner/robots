@@ -4,7 +4,7 @@ import Component from '@ember/component';
  * Control panel for the board.
  */
 const BoardControls = Component.extend({
-  classNames: ['board-controls'],
+  classNames: ['board-controls', 'p-4'],
 
   /**
    * The board object.

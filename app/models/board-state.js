@@ -143,7 +143,7 @@ export default DS.Model.extend({
       possibleGoals = goals.unshiftObjects(this.completedGoals),
       index = Math.floor(Math.random() * possibleGoals.length);
 
-   return possibleGoals[index];
+   return (possibleGoals.length > 0 ? possibleGoals[index] : null);
   },
 
   /**

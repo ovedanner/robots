@@ -1,0 +1,11 @@
+.play {
+  margin-top:$marginTop;
+
+  .board-controls {
+    border:4px solid $blue;
+    @include border-radius($radius: 4px);
+    ul {
+      list-style-type:none;
+    }
+  }
+}

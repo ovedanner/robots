@@ -23,17 +23,19 @@ const BoardDisplay = Component.extend({
    * Initialize the canvas and the board.
    */
   didInsertElement() {
-    const canvas = document.querySelector('canvas');
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const context = canvas.getContext('2d'),
+    const canvas = document.querySelector('canvas'),
       board = this.get('board'),
       draw = this.drawService;
 
-    draw.set('context', context);
-    draw.initialize(board);
+    // These dimensions are also available in the draw service,
+    // but here we need them before getting the rendering context
+    // (which is needed to initialize the draw service).
+    canvas.width = draw.cellSize * board.cells.length;
+    canvas.height = draw.cellSize * board.cells[0].length;
+
+    const context = canvas.getContext('2d');
+
+    draw.initialize(board, context);
 
     // Register the click handler for the canvas.
     canvas.addEventListener('click', (event) => {

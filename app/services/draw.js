@@ -1,4 +1,5 @@
 import Service from '@ember/service';
+import { computed } from '@ember/object';
 
 /**
  * Map of goal color name to actual RGB value.
@@ -29,12 +30,18 @@ export default Service.extend({
   /**
    * Color of the cell.
    */
-  cellColor: '#ECDED1',
+  cellColor: '#FFFFFF',
 
   /**
-   * Size of a single cell.
+   * Sizes.
    */
   cellSize: 50,
+  boardWidth: computed('cellSize', 'board.nrRows', function() {
+    return this.cellSize * this.board.nrRows;
+  }),
+  boardHeight: computed('cellSize', 'board.nrColumns', function() {
+    return this.cellSize * this.board.nrColumns;
+  }),
 
   /**
    * Color of the cell walls.
@@ -45,28 +52,23 @@ export default Service.extend({
    * Holds the board to draw.
    */
   board: null,
-  nrRows: null,
-  nrColumns: null,
 
   /**
    * Caches cell coordinates for easy lookup.
    */
   cellCoordinates: null,
-  topLeft: null,
-  bottomRight: null,
 
   /**
    * Intializes the service with the given
-   * board.
+   * board and context.
    */
-  initialize(board) {
+  initialize(board, context) {
     const cells = board.cells,
-      context = this.context,
       canvas = context.canvas,
       cellCoordinates = [],
       cellSize = this.cellSize,
-      nrRows = cells.length,
-      nrColumns = nrRows,
+      nrRows = board.nrRows,
+      nrColumns = board.nrColumns,
       xStart = parseInt((canvas.clientWidth - (nrColumns * cellSize)) / 2),
       yStart = parseInt((canvas.clientHeight - (nrRows * cellSize)) / 2);
 
@@ -86,23 +88,17 @@ export default Service.extend({
 
     this.setProperties({
       board: board,
+      context: context,
       cellCoordinates: cellCoordinates,
-      topLeft: {
-        x: xStart,
-        y: yStart,
-      },
-      bottomRight: {
-        x: xStart + (nrColumns * cellSize),
-        y: yStart + (nrRows * cellSize),
-      },
-      nrRows: nrRows,
-      nrColumns: nrColumns,
     });
   },
 
 
   /**
-   * Draws the current board.
+   * Draws the current board. The draw order is:
+   * - Cells (and walls)
+   * - Robot paths
+   * - Robots
    */
   draw() {
     const board = this.board,
@@ -112,29 +108,37 @@ export default Service.extend({
       nrColumns = nrRows,
       context = this.context,
       canvas = context.canvas;
+    let goalColor,
+      goalRowIdx,
+      goalColumnIdx;
 
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+    // If there is a current goal, get its target cell.
+    if (state && state.currentGoal) {
+      const number = state.currentGoal.number;
+
+      goalColor = state.currentGoal.color;
+      goalRowIdx = Math.floor(number / nrRows);
+      goalColumnIdx = number % nrColumns;
+    }
 
     // First draw the cells.
     cells.forEach((row, rowIdx) => {
       row.forEach((column, columnIdx) => {
-        let coordinates = this.cellCoordinates[rowIdx][columnIdx];
+        const coordinates = this.cellCoordinates[rowIdx][columnIdx];
+        let color = this.cellColor;
 
-        this.drawCell(cells[rowIdx][columnIdx], coordinates.x, coordinates.y);
+        if (goalColor && rowIdx === goalRowIdx && columnIdx === goalColumnIdx) {
+          color = colorMap[goalColor];
+        }
+
+        this.drawCell(cells[rowIdx][columnIdx], coordinates.x, coordinates.y, color);
       });
     });
 
     // Draw the goal, the robots and the paths.
     if (state) {
-      if (state.currentGoal) {
-        const number = state.currentGoal.number,
-          rowIdx = Math.floor(number / nrRows),
-          columnIdx = number % nrColumns,
-          coordinates = this.cellCoordinates[rowIdx][columnIdx];
-
-        this.drawGoal(state.currentGoal, coordinates.x, coordinates.y);
-      }
-
       if (state.moves.length > 0) {
         this.drawRobotStart(state.start);
         this.drawMoves(state.moves);
@@ -149,10 +153,9 @@ export default Service.extend({
   /**
    * Draws the given cell at the given coordinates.
    */
-  drawCell(cell, x, y) {
+  drawCell(cell, x, y, color) {
     let context = this.context,
       size = this.cellSize,
-      backgroundColor = this.cellColor,
       wallColor = this.wallColor,
       wallSize = this.wallSize,
       top = (cell & 1) > 0,
@@ -165,7 +168,7 @@ export default Service.extend({
       context.fillStyle = 'gray';
       context.fillRect(x, y, size, size);
     } else {
-      context.fillStyle = backgroundColor;
+      context.fillStyle = color;
       context.fillRect(x, y, size, size);
 
       // Background cell borders.
@@ -189,18 +192,6 @@ export default Service.extend({
         context.fillRect(x, y, wallSize, size);
       }
     }
-  },
-
-  /**
-   * Draws the given goal.
-   */
-  drawGoal(goal, x, y) {
-    let context = this.context,
-      size = this.cellSize,
-      backgroundColor = goal.color;
-
-    context.fillStyle = colorMap[backgroundColor];
-    context.fillRect(x, y, size, size);
   },
 
   /**
@@ -289,14 +280,17 @@ export default Service.extend({
    * Click handler for the canvas.
    */
   click(x, y) {
-    const topLeft = this.topLeft,
-      bottomRight = this.bottomRight;
+    const boardPosition = document.querySelector('#board').getBoundingClientRect(),
+      topLeftX = boardPosition.x,
+      bottomRightX = boardPosition.x + boardPosition.width,
+      topLeftY = boardPosition.y,
+      bottomRightY = boardPosition.y + boardPosition.height;
 
     // First check if the click is actually on the board.
-    if (x >= topLeft.x && x <= bottomRight.x && y >= topLeft.y && y <= bottomRight.y) {
+    if (x >= topLeftX && x <= bottomRightX && y >= topLeftY && y <= bottomRightY) {
       // Translate the click coordinates into cell indices and let the state handle it.
-      const rowIdx = Math.floor((y - topLeft.y) / this.cellSize),
-        columnIdx = Math.floor((x - topLeft.x) / this.cellSize);
+      const rowIdx = Math.floor((y - topLeftY) / this.cellSize),
+        columnIdx = Math.floor((x - topLeftX) / this.cellSize);
 
       this.board.state.click(rowIdx, columnIdx);
     }
