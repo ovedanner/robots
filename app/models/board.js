@@ -127,6 +127,15 @@ export default DS.Model.extend({
   },
 
   /**
+   * Checks if the given robot is currently selected.
+   * @param robot
+   * @returns {*}
+   */
+  isRobotSelected(robot) {
+    return this.state.isRobotSelected(robot);
+  },
+
+  /**
    * Returns an array with the row and column index of
    * the given goal.
    * @param goal

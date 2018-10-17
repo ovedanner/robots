@@ -345,4 +345,13 @@ export default DS.Model.extend({
         return (column - 1) >= 0;
     }
   },
+
+  /**
+   * Determines if the given robot is currently selected.
+   * @param robot
+   * @returns {boolean}
+   */
+  isRobotSelected(robot) {
+    return !!this.selectedRobot && this.selectedRobot.color === robot.color;
+  }
 });

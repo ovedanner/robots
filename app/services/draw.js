@@ -257,6 +257,8 @@ export default Service.extend({
     const pos = robot.position,
       size = this.cellSize,
       radius = size / 4,
+      selectedRadius = size / 7,
+      board = this.board,
       context = this.context,
       coordinates = this.cellCoordinates[pos.row][pos.column],
       x = coordinates.x + (size / 2),
@@ -274,6 +276,17 @@ export default Service.extend({
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI, false);
     context.stroke();
+
+    // If the robot is currently selected, draw a little circle
+    // in the middle.
+    if (board.isRobotSelected(robot)) {
+      context.save();
+      context.beginPath();
+      context.arc(x, y, selectedRadius, 0, 2 * Math.PI, false);
+      context.fillStyle = 'black';
+      context.fill();
+      context.restore();
+    }
   },
 
   /**
