@@ -171,8 +171,8 @@ export default DS.Model.extend({
       column: column,
     };
 
-    // Check if the goal was reached.
-    if (this.currentGoal) {
+    // Check if the goal was reached by the appropriate robot.
+    if (this.currentGoal && this.currentGoal.color === robot.color) {
       const [goalRowIdx, goalColumnIdx] = this.board.getGoalIndices(this.currentGoal);
 
       if (row === goalRowIdx && column === goalColumnIdx) {
@@ -308,19 +308,19 @@ export default DS.Model.extend({
 
     switch(direction) {
       case 'up':
-        result = !!(cells[row][column] & 1) ||
+        result = (cells[row][column] & 1) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row - 1, column));
         break;
       case 'right':
-        result = !!(cells[row][column] & 2) ||
+        result = (cells[row][column] & 2) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row, column + 1));
         break;
       case 'down':
-        result = !!(cells[row][column] & 4) ||
+        result = (cells[row][column] & 4) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row + 1, column));
         break;
       case 'left':
-        result = !!(cells[row][column] & 8) ||
+        result = (cells[row][column] & 8) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row, column - 1));
         break;
     }
