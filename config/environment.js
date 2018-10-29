@@ -28,7 +28,7 @@ module.exports = function(environment) {
       sessionServiceName: 'session',
       providers: {
         'google-oauth2': {
-          apiKey: "287879387971-5jfaq5ir44n058tro5i88u3kds7b3om3.apps.googleusercontent.com",
+          apiKey: "287879387971-vv9ukci4e72upoe7c7sbtojv6h9tp3ea.apps.googleusercontent.com",
           redirectUri: "http://localhost:4200/torii/redirect.html"
         }
       }
@@ -41,6 +41,7 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.backendHost = 'http://localhost:3000';
   }
 
   if (environment === 'test') {

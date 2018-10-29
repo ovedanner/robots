@@ -1,0 +1,21 @@
+<div class="container signup">
+  <div class="d-flex flex-row justify-content-center p-4 blue-borders">
+    <div class="d-flex flex-column align-items-center">
+      <div class="p-2">
+        {{#bs-form formLayout="horizontal" model=model onSubmit=(action "signup" model) as |form|}}
+          {{form.element controlType="email" label="Email" placeholder="Email" property="email" required=true}}
+          {{#each model.errors.email as |error|}}
+            <div class="error">{{error.message}}</div>
+          {{/each}}
+          {{form.element controlType="text" label="Firstname" placeholder="Firstname" property="firstname" required=true}}
+          {{form.element controlType="password" label="Password" placeholder="Password" property="password" required=true}}
+          {{#each model.errors.password as |error|}}
+            <div class="error">{{error.message}}</div>
+          {{/each}}
+          {{form.element controlType="password" label="Password confirmation" placeholder="Password confirmation" property="password_confirmation" required=true}}
+          {{bs-button defaultText="Submit" type="primary" buttonType="submit" disabled=model.isSaving}}
+        {{/bs-form}}
+      </div>
+    </div>
+  </div>
+</div>

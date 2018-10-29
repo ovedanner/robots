@@ -5,8 +5,4 @@
     text-decoration:none;
     color:$white;
   }
-  .button-wrapper {
-    border:4px solid $blue;
-    @include border-radius($radius: 4px)
-  }
 }

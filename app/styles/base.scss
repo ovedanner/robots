@@ -1,1 +1,6 @@
 $marginTop:50px;
+
+.blue-borders {
+  border:4px solid $blue;
+  @include border-radius($radius: 4px);
+}

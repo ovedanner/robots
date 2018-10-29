@@ -2,8 +2,12 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
   actions: {
-    login() {
-      this.get('session').authenticate('authenticator:torii', 'google');
-    }
+    loginWithGoogle() {
+      this.session.authenticate('authenticator:torii', 'google');
+    },
+
+    logout: function() {
+      this.session.invalidate();
+    },
   }
 });

@@ -1,0 +1,13 @@
+<div class="container login">
+  <div class="d-flex flex-row justify-content-center p-4 blue-borders">
+    <div class="d-flex flex-column align-items-center">
+      <div class="p-2">
+        {{#bs-form formLayout="horizontal" model=this onSubmit=(action "login" email password) as |form|}}
+          {{form.element controlType="email" label="Email" placeholder="Email" property="email" required=true}}
+          {{form.element controlType="password" label="Password" placeholder="Password" property="password" required=true}}
+          {{bs-button defaultText="Login" type="primary" buttonType="submit" disabled=model.isSaving}}
+        {{/bs-form}}
+      </div>
+    </div>
+  </div>
+</div>

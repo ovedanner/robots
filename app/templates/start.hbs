@@ -2,17 +2,26 @@
   <div class="d-flex flex-row justify-content-center">
     <h1>Robots</h1>
   </div>
-  <div class="d-flex flex-row justify-content-center p-4 button-wrapper">
+  <div class="d-flex flex-row justify-content-center p-4 blue-borders">
     <div class="d-flex flex-column align-items-center">
       <div class="p-2">
         {{#bs-button type="primary"}}{{#link-to "play"}}Single player{{/link-to}}{{/bs-button}}
       </div>
-      <div class="p-2">
-        {{#bs-button type="primary"}}Multiplayer{{/bs-button}}
-      </div>
-      <div class="p-2">
-        {{#bs-button type="primary" onClick=(action "login")}}Login via Google{{/bs-button}}
-      </div>
+      {{#if session.isAuthenticated}}
+        <div class="p-2">
+          {{#bs-button type="primary"}}Multiplayer{{/bs-button}}
+        </div>
+        <div class="p-2">
+          {{#bs-button type="primary" onClick=(action "logout")}}Logout{{/bs-button}}
+        </div>
+      {{else}}
+        <div class="p-2">
+          {{#bs-button type="primary"}}{{#link-to "login"}}Login{{/link-to}}{{/bs-button}}
+        </div>
+        <div class="p-2">
+          {{#bs-button type="primary" onClick=(action "loginWithGoogle")}}Login via Google{{/bs-button}}
+        </div>
+      {{/if}}
     </div>
   </div>
 </div>
