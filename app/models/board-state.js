@@ -85,6 +85,7 @@ export default DS.Model.extend({
     this.setProperties({
       robots: robots,
       selectedRobot: null,
+      moves: [],
     });
   },
 

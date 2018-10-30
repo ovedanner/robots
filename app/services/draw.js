@@ -139,14 +139,16 @@ export default Service.extend({
 
     // Draw the goal, the robots and the paths.
     if (state) {
-      if (state.moves.length > 0) {
+      if (state.moves && state.moves.length > 0) {
         this.drawRobotStart(state.start);
         this.drawMoves(state.moves);
       }
 
-      state.robots.forEach((robot) => {
-        this.drawRobot(robot);
-      });
+      if (state.robots) {
+        state.robots.forEach((robot) => {
+          this.drawRobot(robot);
+        });
+      }
     }
   },
 

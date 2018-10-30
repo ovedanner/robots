@@ -130,11 +130,10 @@ export default Route.extend({
   },
 
   /**
-   * Start a game on the board.
+   * Register the board.
    * @param model
    */
   afterModel(model) {
     this.gameService.registerBoard(model);
-    this.gameService.startNewGame(model);
   }
 });

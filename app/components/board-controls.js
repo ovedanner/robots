@@ -5,12 +5,12 @@ import { inject as service } from '@ember/service';
  * Control panel for the board.
  */
 const BoardControls = Component.extend({
-  classNames: ['board-controls', 'p-4'],
+  classNames: ['board-controls', 'p-4', 'blue-borders'],
 
   /**
    * Game service.
    */
-  gameService: service('game'),
+  game: service(),
 
   /**
    * The board object.
@@ -20,6 +20,10 @@ const BoardControls = Component.extend({
   actions: {
     resetRobotsToStart() {
       this.board.resetRobotsToStart();
+    },
+
+    startNewGame() {
+      this.game.startNewGame(this.board);
     },
   }
 });

@@ -5,7 +5,7 @@ import { inject as service } from '@ember/service';
  * Log
  */
 const BoardLog = Component.extend({
-  classNames: ['board-log', 'p-4'],
+  classNames: ['board-log', 'p-4', 'blue-borders'],
 
   /**
    * Game service.

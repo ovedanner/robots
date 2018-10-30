@@ -1,5 +1,6 @@
 <ul>
   <li class="p-2">Number of moves: {{board.currentNrMoves}}</li>
   <li class="p-2">Finished: {{board.finished}}</li>
+  <li class="p-2">{{#bs-button type="primary" onClick=(action "startNewGame")}}Start new game{{/bs-button}}</li>
   <li class="p-2">{{#bs-button type="primary" onClick=(action "resetRobotsToStart")}}Reset{{/bs-button}}</li>
 </ul>
