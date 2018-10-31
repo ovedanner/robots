@@ -1,0 +1,16 @@
+{{#bs-modal open=true onSubmit=(action "saveRoom" model) as |modal|}}
+  {{#modal.header closeButton=false}}
+    <h4 class="modal-title">
+      Create a new room
+    </h4>
+  {{/modal.header}}
+  {{#modal.body}}
+    {{#bs-form formLayout="horizontal" model=model as |form|}}
+      {{form.element controlType="text" label="Name" placeholder="Name" property="name" required=true}}
+    {{/bs-form}}
+  {{/modal.body}}
+  {{#modal.footer}}
+    {{#bs-button onClick=(action "closeModal" modal)}}Cancel{{/bs-button}}
+    {{#bs-button type="success" onClick=(action "saveRoom" model)}}Save{{/bs-button}}
+  {{/modal.footer}}
+{{/bs-modal}}

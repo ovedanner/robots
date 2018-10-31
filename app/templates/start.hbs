@@ -9,7 +9,7 @@
       </div>
       {{#if session.isAuthenticated}}
         <div class="p-2">
-          {{#bs-button type="primary"}}Multiplayer{{/bs-button}}
+          {{#bs-button type="primary"}}{{#link-to "rooms"}}Multiplayer{{/link-to}}{{/bs-button}}
         </div>
         <div class="p-2">
           {{#bs-button type="primary" onClick=(action "logout")}}Logout{{/bs-button}}

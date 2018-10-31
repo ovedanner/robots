@@ -9,11 +9,17 @@ export default Base.extend({
       },
     };
 
-    return this.ajax.post('/access_tokens', credentials);
+    return this.ajax.post('/access_tokens', credentials).then((data) => {
+      return {
+        token: data.data.attributes.token,
+        tokenId: data.data.id,
+        userId: data.data.relationships.user.data.id
+      }
+    });
   },
 
   invalidate(data) {
-    return this.ajax.del(`access_tokens/${data.data.id}`)
+    return this.ajax.del(`access_tokens/${data.tokenId}`)
   },
 
   restore(data) {

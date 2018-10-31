@@ -1,0 +1,23 @@
+<div class="container rooms">
+  <div class="d-flex flex-row justify-content-center">
+    <h1>Rooms</h1>
+  </div>
+  <div class="d-flex flex-row">
+    {{#bs-button type="primary"}}{{#link-to "rooms.add"}}Create room{{/link-to}}{{/bs-button}}
+  </div>
+  <div class="d-flex flex-row justify-content-center p-4 blue-borders">
+    <ul class="d-flex flex-column">
+      {{#each model as |room|}}
+        <li class="d-flex flex-row">
+          {{room-display
+            room=room
+            user=session.user
+            join=(action "joinRoom" room)}}
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+
+{{outlet}}
+
