@@ -5,18 +5,18 @@
   <div class="d-flex flex-row justify-content-center p-4 blue-borders">
     <div class="d-flex flex-column align-items-center">
       <div class="p-2">
-        {{#bs-button type="primary"}}{{#link-to "play"}}Single player{{/link-to}}{{/bs-button}}
+        {{#link-to "play.alone" classNames="btn btn-primary"}}Single player{{/link-to}}
       </div>
       {{#if session.isAuthenticated}}
         <div class="p-2">
-          {{#bs-button type="primary"}}{{#link-to "rooms"}}Multiplayer{{/link-to}}{{/bs-button}}
+          {{#link-to "rooms" classNames="btn btn-primary"}}Multiplayer{{/link-to}}
         </div>
         <div class="p-2">
           {{#bs-button type="primary" onClick=(action "logout")}}Logout{{/bs-button}}
         </div>
       {{else}}
         <div class="p-2">
-          {{#bs-button type="primary"}}{{#link-to "login"}}Login{{/link-to}}{{/bs-button}}
+          {{#link-to "login" classNames="btn btn-primary"}}Login{{/link-to}}
         </div>
         <div class="p-2">
           {{#bs-button type="primary" onClick=(action "loginWithGoogle")}}Login via Google{{/bs-button}}

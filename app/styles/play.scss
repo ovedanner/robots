@@ -1,10 +1,15 @@
 .play {
   margin-top:$marginTop;
 
-  .board-controls, .board-log {
+  .board-controls, .game-log {
     width:250px;
     ul {
       list-style-type:none;
     }
+  }
+
+  .header {
+    min-height:50px;
+    text-align:center;
   }
 }

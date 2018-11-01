@@ -6,13 +6,14 @@ export default Controller.extend({
       room.save();
     },
 
+    /**
+     * Join the given room (if you're not a member yet).
+     * @param room
+     */
     joinRoom(room) {
-      room.get('members').forEach((member) => {
-        console.log(member.email);
-      })
-      // this.ajax.post(`/rooms/${room.id}/join`).then(() => {
-      //   this.transitionToRoute('play.room', room);
-      // });
+      this.ajax.post(`/rooms/${room.id}/join`).then(() => {
+        this.transitionToRoute('play.room', room);
+      });
     },
   },
 });
