@@ -1,13 +1,25 @@
-<div class="d-flex flex-row">
-  <ul class="d-flex flex-column">
-    {{#each events as |event|}}
-      <li class="d-flex flex-row p-2">{{event.message}}</li>
-    {{/each}}
-  </ul>
+<div class="d-flex flex-row p-4">
+  <div id="game-log-container" class="flex-grow-1">
+    <ul>
+      {{#each gameLog.events as |event|}}
+        {{game-event
+          event=event
+          user=user}}
+      {{/each}}
+    </ul>
+  </div>
 </div>
-<div class="d-flex flex-row">
-  {{#bs-form formLayout="horizontal" model=this as |form|}}
-    {{form.element controlType="text" placeholder="Type a message" property="newMessage"}}
-    {{bs-button defaultText="Send" type="primary" onClick=(action "sendMessage" newMessage)}}
-  {{/bs-form}}
+<div class="d-flex flex-row new-message-container align-self-end flex-shrink-0">
+  {{input
+    value=newMessage
+    title="message"
+    type="text"
+    placeholder="Enter message"
+    class="flex-grow-1 form-control m-2"
+    enter=(action "sendMessage" newMessage)}}
+  {{bs-button
+    defaultText="Send"
+    type="primary"
+    onClick=(action "sendMessage" newMessage)
+    classNames="m-2"}}
 </div>

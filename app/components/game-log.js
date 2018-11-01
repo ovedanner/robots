@@ -1,21 +1,17 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import ActionCableSupport from '../mixins/action-cable-support';
+import { next } from '@ember/runloop';
 
 /**
  * Log component for all game related events. This includes
  * the chatting.
  */
 export default Component.extend(ActionCableSupport, {
-  classNames: ['d-flex game-log', 'p-4', 'blue-borders'],
-  game: service(),
+  classNames: ['d-flex game-log', 'blue-borders', 'flex-grow-0', 'flex-column'],
+  gameLog: service(),
   room: null,
-
-  /**
-   * Holds all events that will be displayed, such as chat messages
-   * or board moves.
-   */
-  events: null,
+  newMessage: '',
 
   actions: {
     /**
@@ -23,7 +19,14 @@ export default Component.extend(ActionCableSupport, {
      * @param message
      */
     sendMessage(message) {
-      this.performAction('speak', { message: message });
+      const msg = {
+        message: message,
+        author: this.user.get('firstname'),
+        author_id: this.user.get('id'),
+      };
+
+      this.performAction('speak', msg);
+      this.set('newMessage', '');
     }
   },
 
@@ -38,7 +41,6 @@ export default Component.extend(ActionCableSupport, {
     this.setupSocket({
       open: this.socketOpen,
       message: this.socketMessage,
-      close: this.socketClose
     });
   },
 
@@ -68,9 +70,19 @@ export default Component.extend(ActionCableSupport, {
     const data = JSON.parse(event.data);
 
     if (data.message && data.message.action === 'speak') {
-      this.events.pushObject({
-        message: data.message.message
-      });
+      this.gameLog.addEvent(data.message);
+
+      this.scrollEvenListToBottom();
     }
   },
+
+  /**
+   * Scroll the even list to the bottom.
+   */
+  scrollEvenListToBottom() {
+    next(() => {
+      const el = document.getElementById('game-log-container');
+      el.scrollTop = el.scrollHeight - el.clientHeight;
+    });
+  }
 });

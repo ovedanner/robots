@@ -1,21 +1,18 @@
 <div class="container-fluid d-flex justify-content-center play">
   <div class="d-flex flex-column">
-    <div class="d-flex flex-row blue-borders m-2 header align-items-center justify-content-center">
+    <div class="d-flex flex-row blue-borders m-2 p-2 header align-items-center justify-content-center">
       <h3>Room: {{model.name}}</h3>
     </div>
     <div class="d-flex flex-row">
-      <div class="d-flex mr-2 ml-2">
-        {{board-controls board}}
-      </div>
-      <div class="d-flex mr-2 ml-2">
+      <div class="mr-2 ml-2">
         {{#if board}}
           {{board-display board}}
         {{else}}
           <div style="width:800px;height:800px" class="blue-borders"></div>
         {{/if}}
       </div>
-      <div class="d-flex mr-2 ml-2">
-        {{game-log room=model}}
+      <div class="mr-2 ml-2">
+        {{game-log room=model user=session.user}}
       </div>
     </div>
   </div>

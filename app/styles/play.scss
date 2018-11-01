@@ -1,15 +1,47 @@
 .play {
-  margin-top:$marginTop;
+  margin-top: $marginTop;
 
   .board-controls, .game-log {
-    width:250px;
+    width: 350px;
     ul {
-      list-style-type:none;
+      list-style-type: none;
+    }
+  }
+
+  .game-log {
+    height: 800px;
+
+    #game-log-container {
+      overflow: auto;
+    }
+
+    .new-message-container {
+     border-top: 4px solid $blue;
+     height: $input-height + 4px;
+    }
+
+    .game-event {
+      @include border-radius($radius: 4px);
+      color: white;
+      background-color: $green;
+      // Differentiate between your own messages and those
+      // of others.
+      &.own {
+        margin-left: 70px;
+        text-align: right;
+      }
+      &.other {
+        margin-right: 70px;
+      }
+
+      .author-name {
+        color:black;
+      }
     }
   }
 
   .header {
-    min-height:50px;
-    text-align:center;
+    min-height: 50px;
+    text-align: center;
   }
 }
