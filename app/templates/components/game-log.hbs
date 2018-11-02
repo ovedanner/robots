@@ -1,6 +1,9 @@
-<div class="d-flex flex-row p-4 flex-grow-1">
-  <div id="game-log-container" class="flex-grow-1">
-    <ul>
+<div id="game-log-header" class="d-flex flex-row flex-shrink-0 justify-content-center p-2">
+  <h3>Chat</h3>
+</div>
+<div id="game-log-container" class="d-flex flex-row flex-grow-1">
+  <div id="game-log-container-inner" class="d-flex flex-column flex-grow-1">
+    <ul class="p-4">
       {{#each gameLog.events as |event|}}
         {{game-event
           event=event

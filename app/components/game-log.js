@@ -8,7 +8,9 @@ import { next } from '@ember/runloop';
  * the chatting.
  */
 export default Component.extend(ActionCableSupport, {
-  classNames: ['d-flex game-log', 'blue-borders', 'flex-grow-0', 'flex-column'],
+  classNames: ['d-flex', 'blue-borders', 'flex-column'],
+  attributeBindings: ['id'],
+  id: 'game-log',
   gameLog: service(),
   room: null,
   newMessage: '',

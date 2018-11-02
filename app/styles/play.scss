@@ -1,18 +1,15 @@
 .play {
   margin-top: $marginTop;
 
-  .board-controls, .game-log {
-    width: 350px;
+  #game-log {
+    height: 800px;
+    width: 300px;
     ul {
       list-style-type: none;
     }
-  }
-
-  .game-log {
-    height: 800px;
 
     #game-log-container {
-      overflow: auto;
+      overflow-y: auto;
     }
 
     .new-message-container {
@@ -20,18 +17,23 @@
       height: $input-height + 4px;
     }
 
+    #game-log-header {
+      border-bottom: 4px solid $blue;
+      height: $input-height + 4px;
+    }
+
     .game-event {
       @include border-radius($radius: 4px);
       color: white;
-      // Differentiate between your own messages and those
+      // Differentiate between your own events and those
       // of others.
       &.own {
-        margin-left: 70px;
+        margin-left: 50px;
         text-align: right;
         background-color: $gray-500;
       }
       &.other {
-        margin-right: 70px;
+        margin-right: 50px;
         background-color: $green;
       }
 
