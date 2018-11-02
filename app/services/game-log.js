@@ -10,10 +10,6 @@ export default Service.extend({
   init() {
     this._super(...arguments);
     this.set('events', []);
-
-    for (let i = 0; i < 30; i++) {
-      this.addEvent({message: `Test ${i}`});
-    }
   },
 
   addEvent(event) {

@@ -19,13 +19,7 @@ export default Component.extend(ActionCableSupport, {
      * @param message
      */
     sendMessage(message) {
-      const msg = {
-        message: message,
-        author: this.user.get('firstname'),
-        author_id: this.user.get('id'),
-      };
-
-      this.performAction('speak', msg);
+      this.performAction('speak', { message: message });
       this.set('newMessage', '');
     }
   },

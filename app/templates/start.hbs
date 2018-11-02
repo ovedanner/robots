@@ -1,8 +1,11 @@
 <div class="container start">
-  <div class="d-flex flex-row justify-content-center">
+  <div class="d-flex justify-content-center">
     <h1>Robots</h1>
+    {{#unless session.isAuthenticated}}
+      {{#link-to "signup"}}sign up{{/link-to}}
+    {{/unless}}
   </div>
-  <div class="d-flex flex-row justify-content-center p-4 blue-borders">
+  <div class="d-flex justify-content-center p-4 blue-borders">
     <div class="d-flex flex-column align-items-center">
       <div class="p-2">
         {{#link-to "play.alone" classNames="btn btn-primary"}}Single player{{/link-to}}

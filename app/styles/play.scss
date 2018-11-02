@@ -16,22 +16,23 @@
     }
 
     .new-message-container {
-     border-top: 4px solid $blue;
-     height: $input-height + 4px;
+      border-top: 4px solid $blue;
+      height: $input-height + 4px;
     }
 
     .game-event {
       @include border-radius($radius: 4px);
       color: white;
-      background-color: $green;
       // Differentiate between your own messages and those
       // of others.
       &.own {
         margin-left: 70px;
         text-align: right;
+        background-color: $gray-500;
       }
       &.other {
         margin-right: 70px;
+        background-color: $green;
       }
 
       .author-name {
