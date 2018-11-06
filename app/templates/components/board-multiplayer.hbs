@@ -1,0 +1,13 @@
+<div class="d-flex">
+  {{#if userOwnsRoom}}
+    <div>
+      {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
+    </div>
+  {{/if}}
+  {{#if board}}
+    {{board-canvas board}}
+  {{else}}
+  {{! Placeholder board }}
+    <div style="width:800px;height:800px" class="blue-borders"></div>
+  {{/if}}
+</div>

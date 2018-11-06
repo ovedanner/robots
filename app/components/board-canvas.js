@@ -4,7 +4,7 @@ import { inject as service } from '@ember/service';
 /**
  * The component that encompasses the entire board.
  */
-const BoardDisplay = Component.extend({
+const BoardCanvas = Component.extend({
   tagName: 'canvas',
   attributeBindings: ['id'],
   id: 'board',
@@ -50,8 +50,8 @@ const BoardDisplay = Component.extend({
   },
 });
 
-BoardDisplay.reopenClass({
+BoardCanvas.reopenClass({
   positionalParams: ['board']
 });
 
-export default BoardDisplay;
+export default BoardCanvas;

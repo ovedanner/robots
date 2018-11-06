@@ -55,7 +55,7 @@ export default Mixin.create({
    * @param data
    */
   performAction(action, data) {
-    const payload = Object.assign(data, { action: action });
+    const payload = Object.assign(data || {}, { action: action });
     const message = {
       command: 'message',
       identifier: this.channelIdentifier,
