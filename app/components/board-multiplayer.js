@@ -7,6 +7,8 @@ export default Component.extend(ActionCableSupport, {
 
   store: service(),
 
+  classNames: ['d-flex'],
+
   /**
    * The board will be loaded through a websocket when
    * the owner starts a game.
@@ -57,6 +59,7 @@ export default Component.extend(ActionCableSupport, {
   socketMessage(event) {
     const data = JSON.parse(event.data);
 
+    // Starts a new game, board data is received.
     if (data.message && data.message.action === 'start') {
       const boardData = data.message;
       const board = this.store.createRecord('board', {
@@ -64,6 +67,8 @@ export default Component.extend(ActionCableSupport, {
         goals: boardData.goals,
         robotColors: boardData.robot_colors
       });
+      board.setRobotPositions(boardData.robot_positions);
+      board.setCurrentGoal(boardData.current_goal);
 
       this.set('board', board);
     }

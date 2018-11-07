@@ -90,6 +90,18 @@ export default DS.Model.extend({
   },
 
   /**
+   * Sets the robots to the given positions.
+   * @param positions
+   */
+  setRobotPositions(positions) {
+    this.setProperties({
+      robots: positions,
+      selectedRobot: null,
+      moves: [],
+    });
+  },
+
+  /**
    * Resets the robots to the start of the play.
    */
   resetRobotsToStart() {

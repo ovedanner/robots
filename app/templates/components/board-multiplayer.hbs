@@ -1,13 +1,26 @@
-<div class="d-flex">
-  {{#if userOwnsRoom}}
-    <div>
-      {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
-    </div>
+<div id="game-controls" class="d-flex flex-column blue-borders mr-2 p-2">
+  {{#if (and userOwnsRoom (not board))}}
+    {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
+    <p>This will generate a new board and start the game</p>
   {{/if}}
   {{#if board}}
-    {{board-canvas board}}
-  {{else}}
-  {{! Placeholder board }}
-    <div style="width:800px;height:800px" class="blue-borders"></div>
+    <div class="d-flex">
+      <div class="flex-grow-1 mr-2">
+        {{input
+          value=newMessage
+          title="solution"
+          type="text"
+          placeholder="Moves"
+          autofocus=true
+          class="form-control"}}
+      </div>
+      <div class="btn btn-primary ml-2">Send</div>
+    </div>
   {{/if}}
 </div>
+{{#if board}}
+  {{board-canvas board}}
+{{else}}
+{{! Placeholder board }}
+  <div style="width:800px;height:800px" class="blue-borders flex-shrink-0"></div>
+{{/if}}

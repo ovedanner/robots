@@ -97,6 +97,14 @@ export default DS.Model.extend({
   },
 
   /**
+   * Sets the robots on the board.
+   * @param robotPositions
+   */
+  setRobotPositions(robotPositions) {
+    this.state.setRobotPositions(robotPositions);
+  },
+
+  /**
    * Returns the current moves on on the board.
    * @returns {null|Array}
    */
