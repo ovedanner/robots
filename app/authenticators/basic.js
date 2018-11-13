@@ -1,6 +1,7 @@
 import Base from 'ember-simple-auth/authenticators/base';
+import BaseAuthenticatorHandlers from '../mixins/base-authenticator-handlers';
 
-export default Base.extend({
+export default Base.extend(BaseAuthenticatorHandlers, {
   authenticate(email, password) {
     const credentials = {
       data: {
@@ -15,16 +16,6 @@ export default Base.extend({
         tokenId: data.data.id,
         userId: data.data.relationships.user.data.id
       }
-    });
-  },
-
-  invalidate(data) {
-    return this.ajax.del(`access_tokens/${data.tokenId}`)
-  },
-
-  restore(data) {
-    return new Promise(function(resolve) {
-      resolve(data);
     });
   },
 });

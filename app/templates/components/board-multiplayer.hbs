@@ -7,14 +7,14 @@
     <div class="d-flex">
       <div class="flex-grow-1 mr-2">
         {{input
-          value=newMessage
+          value=nrMoves
           title="solution"
           type="text"
           placeholder="Moves"
           autofocus=true
           class="form-control"}}
       </div>
-      <div class="btn btn-primary ml-2">Send</div>
+      <div class="btn btn-primary ml-2" {{action "sendNumberOfMoves" nrMoves}}>Send</div>
     </div>
   {{/if}}
 </div>

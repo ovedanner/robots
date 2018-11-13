@@ -1,6 +1,14 @@
 $marginTop: 50px;
 
+body {
+  background-color: #e0e0e0;
+}
+
 .blue-borders {
   border: 4px solid $blue;
   @include border-radius($radius: 4px);
+}
+
+#content-wrapper {
+  margin-top: $marginTop;
 }

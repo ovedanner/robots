@@ -1,7 +1,8 @@
 import { inject as service } from '@ember/service';
 import ToriiAuthenticator from 'ember-simple-auth/authenticators/torii';
+import BaseAuthenticatorHandlers from '../mixins/base-authenticator-handlers';
 
-export default ToriiAuthenticator.extend({
+export default ToriiAuthenticator.extend(BaseAuthenticatorHandlers, {
   torii: service(),
   ajax: service(),
 
@@ -20,16 +21,6 @@ export default ToriiAuthenticator.extend({
           userId: data.data.relationships.user.data.id
         }
       });
-    });
-  },
-
-  invalidate(data) {
-    return this.ajax.del(`access_tokens/${data.tokenId}`)
-  },
-
-  restore(data) {
-    return new Promise(function(resolve) {
-      resolve(data);
     });
   },
 });

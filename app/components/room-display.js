@@ -11,7 +11,7 @@ export default Component.extend({
    */
   userCanJoinRoom: computed('room.{owner,open}', 'user', function() {
     const ownerId = this.room.owner.get('id'),
-      userId = this.user.id;
+      userId = this.user.get('id');
 
     return ownerId === userId || this.room.open;
   })

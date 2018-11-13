@@ -135,5 +135,6 @@ export default Route.extend({
    */
   afterModel(model) {
     this.gameService.registerBoard(model);
+    this.gameService.startNewGame(model);
   }
 });

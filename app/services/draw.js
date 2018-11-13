@@ -30,7 +30,7 @@ export default Service.extend({
   /**
    * Color of the cell.
    */
-  cellColor: '#FFFFFF',
+  cellColor: '#f9f9f9',
 
   /**
    * Sizes.
@@ -112,6 +112,7 @@ export default Service.extend({
       goalRowIdx,
       goalColumnIdx;
 
+    // For now simply clear the whole canvas and draw everything again.
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
     // If there is a current goal, get its target cell.
