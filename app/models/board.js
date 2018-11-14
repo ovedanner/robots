@@ -144,6 +144,15 @@ export default DS.Model.extend({
   },
 
   /**
+   * A click event occurred in the given row and column.
+   * @param row
+   * @param column
+   */
+  click(row, column) {
+    this.state.click(row, column);
+  },
+
+  /**
    * Returns an array with the row and column index of
    * the given goal.
    * @param goal
@@ -163,5 +172,5 @@ export default DS.Model.extend({
    */
   getGoalId(goal) {
     return `${goal.color}_${goal.number}`;
-  }
+  },
 });

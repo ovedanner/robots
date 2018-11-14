@@ -308,7 +308,7 @@ export default Service.extend({
       const rowIdx = Math.floor((y - topLeftY) / this.cellSize),
         columnIdx = Math.floor((x - topLeftX) / this.cellSize);
 
-      this.board.state.click(rowIdx, columnIdx);
+      this.board.click(rowIdx, columnIdx);
     }
   },
 });

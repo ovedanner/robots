@@ -1,8 +1,15 @@
 import Service from '@ember/service';
 import { assert } from '@ember/debug';
 
+/**
+ * The game service is responsible for handling
+ * high level board events, such as when a goal
+ * is reached by a user or the game is finished.
+ */
 export default Service.extend({
-
+  /**
+   * Holds all known boards and their progress.
+   */
   plays: null,
 
   init() {
@@ -10,6 +17,10 @@ export default Service.extend({
     this.set('plays', {});
   },
 
+  /**
+   * Registers the given board at the game service.
+   * @param board
+   */
   registerBoard(board) {
     if (!this.plays[board]) {
       this.plays[board] = {
@@ -60,6 +71,11 @@ export default Service.extend({
     }
   },
 
+  /**
+   * Indicates that the given goal was reached on the given board.
+   * @param board
+   * @param goal
+   */
   goalReached(board, goal) {
     const boardProperties = this.getProperties(board);
 

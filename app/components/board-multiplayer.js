@@ -16,6 +16,11 @@ export default Component.extend(ActionCableSupport, {
   board: null,
 
   /**
+   * Can the user provide a solution for the current goal?
+   */
+  cantProvideSolution: false,
+
+  /**
    * Does the user own the room? If so, he has more controls.
    */
   userOwnsRoom: computed('user.id', 'room.owner.id', function() {
@@ -73,25 +78,61 @@ export default Component.extend(ActionCableSupport, {
       switch (data.message.action) {
         // Starts a new game.
         case 'start':
-          const boardData = data.message;
-          const board = this.store.createRecord('board', {
-            cells: boardData.cells,
-            goals: boardData.goals,
-            robotColors: boardData.robot_colors
-          });
-          board.setRobotPositions(boardData.robot_positions);
-          board.setCurrentGoal(boardData.current_goal);
-          this.set('board', board);
-
+          this.startNewGame(data.message);
           break;
         // Somebody has a new best solution!
         case 'has_solution_in':
-          const bestSoFar = data.message.current_winner,
-            nrMoves = data.message.current_nr_moves;
-          this.gameLog.addEvent({
-            message: `${bestSoFar} has a solution in ${nrMoves} moves!`
-          });
+          this.hasSolutionIn(data.message);
+          break;
+
+        case 'closed_for_solutions':
+          this.closedForSolutions(data.message);
+          break;
       }
     }
   },
+
+  /**
+   * Starts a new game.
+   * @param messageData
+   */
+  startNewGame(messageData) {
+    const board = this.store.createRecord('board', {
+      cells: messageData.cells,
+      goals: messageData.goals,
+      robotColors: messageData.robot_colors
+    });
+
+    board.setRobotPositions(messageData.robot_positions);
+    board.setCurrentGoal(messageData.current_goal);
+    this.set('board', board);
+  },
+
+  /**
+   * Called when a user claims to have a solution in
+   * a certain number of steps.
+   * @param messageData
+   */
+  hasSolutionIn(messageData) {
+    const bestSoFar = messageData.current_winner,
+      nrMoves = messageData.current_nr_moves;
+
+    this.gameLog.addEvent({
+      message: `${bestSoFar} has a solution in ${nrMoves} moves!`
+    });
+  },
+
+  /**
+   * The time to provide a (better) solutions for the current
+   * goal expired.
+   * @param messageData
+   */
+  closedForSolutions(messageData) {
+    const bestSoFar = messageData.current_winner;
+
+    this.set('cantProvideSolution', true);
+    this.gameLog.addEvent({
+      message: `Time's up! Waiting for ${bestSoFar} to provide his moves.`
+    });
+  }
 });
