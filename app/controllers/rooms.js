@@ -7,7 +7,8 @@ export default Controller.extend({
     },
 
     /**
-     * Join the given room (if you're not a member yet).
+     * Joins the room by transitioning to the appropriate route.
+     * That route's model will take care of the actual join call.
      * @param room
      */
     joinRoom(room) {

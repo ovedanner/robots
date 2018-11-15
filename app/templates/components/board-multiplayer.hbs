@@ -1,4 +1,4 @@
-<div id="game-controls" class="d-flex flex-column blue-borders mr-2 p-2">
+<div id="game-controls" class="d-flex flex-column gray-borders mr-2 p-2">
   {{#if (and userOwnsRoom (not board))}}
     {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
     <p>This will generate a new board and start the game</p>
@@ -25,8 +25,8 @@
   {{/if}}
 </div>
 {{#if board}}
-  {{board-canvas board}}
+  {{board-canvas board onClick=(action "clickedBoard")}}
 {{else}}
 {{! Placeholder board }}
-  <div style="width:800px;height:800px" class="blue-borders flex-shrink-0"></div>
+  <div style="width:800px;height:800px" class="gray-borders flex-shrink-0"></div>
 {{/if}}

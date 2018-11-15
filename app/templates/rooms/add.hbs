@@ -5,8 +5,8 @@
     </h4>
   {{/modal.header}}
   {{#modal.body}}
-    {{#bs-form formLayout="horizontal" model=model as |form|}}
-      {{form.element controlType="text" label="Name" placeholder="Name" property="name" required=true}}
+    {{#bs-form formLayout="horizontal" model=model onSubmit=(action "saveRoom" model) as |form|}}
+      {{form.element controlType="text" label="Name" placeholder="Name" property="name" required=true autofocus=true}}
     {{/bs-form}}
   {{/modal.body}}
   {{#modal.footer}}

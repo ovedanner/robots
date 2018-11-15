@@ -4,7 +4,7 @@ export default Controller.extend({
   actions: {
     saveRoom(room) {
       room.save().then(() => {
-        this.transitionToRoute('rooms');
+        this.transitionToRoute('play.room', room);
       });
     },
 

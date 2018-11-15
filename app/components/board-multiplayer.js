@@ -1,6 +1,6 @@
 import Component from '@ember/component';
 import ActionCableSupport from '../mixins/action-cable-support';
-import { computed } from '@ember/object';
+import { computed, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 
 export default Component.extend(ActionCableSupport, {
@@ -21,10 +21,27 @@ export default Component.extend(ActionCableSupport, {
   cantProvideSolution: false,
 
   /**
+   * Can the user provide moves?
+   */
+  canProvideMoves: false,
+
+  /**
    * Does the user own the room? If so, he has more controls.
    */
   userOwnsRoom: computed('user.id', 'room.owner.id', function() {
     return this.user.get('id') === this.room.owner.get('id');
+  }),
+
+  /**
+   * Observe the board for reaching the current goal. We might want to
+   * send the moves.
+   */
+  isCurrentGoalReached: observer('board.currentGoalReached', function() {
+    if (this.board.currentGoalReached) {
+      this.performAction('solution_moves', {
+        moves: this.board.moves
+      });
+    }
   }),
 
   actions: {
@@ -43,6 +60,22 @@ export default Component.extend(ActionCableSupport, {
       this.performAction('has_solution_in', {
         nr_moves: nrMoves
       });
+    },
+
+    /**
+     * Called when a certain row and column on the board have been clicked.
+     * @param row
+     * @param column
+     */
+    clickedBoard(row, column) {
+      const reachedCurrentGoal = this.board.click(row, column);
+
+      // If the current goal has been reached
+      if (reachedCurrentGoal && this.canProvideMoves) {
+        this.performAction('solution_moves', {
+          moves: this.board.moves
+        });
+      }
     }
   },
 
@@ -85,8 +118,14 @@ export default Component.extend(ActionCableSupport, {
           this.hasSolutionIn(data.message);
           break;
 
+        // Nobody can provide solutions anymore.
         case 'closed_for_solutions':
           this.closedForSolutions(data.message);
+          break;
+
+        // The best so far can't provide his moves anymore.
+        case 'closed_for_moves':
+          this.closedForMoves(data.message);
           break;
       }
     }
@@ -124,15 +163,30 @@ export default Component.extend(ActionCableSupport, {
 
   /**
    * The time to provide a (better) solutions for the current
-   * goal expired.
+   * goal expired. If the user is the best so far, he can
+   * provide moves.
    * @param messageData
    */
   closedForSolutions(messageData) {
-    const bestSoFar = messageData.current_winner;
+    const bestSoFar = messageData.current_winner,
+      bestSoFarId = messageData.current_winner_id;
 
-    this.set('cantProvideSolution', true);
+    this.setProperties({
+      cantProvideSolution: true,
+      canProvideMoves: (this.user.get('id') === bestSoFarId)
+    });
     this.gameLog.addEvent({
       message: `Time's up! Waiting for ${bestSoFar} to provide his moves.`
+    });
+  },
+
+  /**
+   * Nobody can provide moves anymore.
+   */
+  closedForMoves() {
+    this.set('canProvideMoves', false);
+    this.gameLog.addEvent({
+      message: `The winner can't provide moves anymore.`
     });
   }
 });
