@@ -65,16 +65,11 @@ const BoardCanvas = Component.extend({
    * Initialize the canvas and the board.
    */
   didInsertElement() {
-    const canvas = document.querySelector('canvas');
-
-    canvas.width = this.cellSize * this.board.cells.length;
-    canvas.height = this.cellSize * this.board.cells[0].length;
-
-    this.set('context', canvas.getContext('2d'));
-
     this.initialize();
 
     // Register the click handler for the canvas.
+    const canvas = document.querySelector('canvas');
+
     canvas.addEventListener('click', (event) => {
       this.click(event.pageX, event.pageY);
     }, false);
@@ -90,10 +85,15 @@ const BoardCanvas = Component.extend({
    * Initializes cell coordinates.
    */
   initialize() {
+    const canvas = document.querySelector('canvas');
+
+    canvas.width = this.cellSize * this.board.cells.length;
+    canvas.height = this.cellSize * this.board.cells[0].length;
+
+    this.set('context', canvas.getContext('2d'));
+
     const board = this.board,
-      context = this.context,
       cells = board.cells,
-      canvas = context.canvas,
       cellCoordinates = [],
       cellSize = this.cellSize,
       nrRows = board.nrRows,
@@ -164,7 +164,7 @@ const BoardCanvas = Component.extend({
     // Draw the goal, the robots and the paths.
     if (board.moves && board.moves.length > 0) {
       this.drawRobotStart(board.start);
-      this.drawMoves(board.moves);
+      this.drawMoves(board.moves, board.start);
     }
 
     if (board.robots) {
@@ -247,17 +247,30 @@ const BoardCanvas = Component.extend({
   /**
    * Draws the given moves.
    */
-  drawMoves(moves) {
+  drawMoves(moves, start) {
     let size = this.cellSize,
       context = this.context,
-      cellCoordinates = this.cellCoordinates;
+      cellCoordinates = this.cellCoordinates,
+      positions = {};
+
+    // Make a copy of the current robot positions and update
+    // this whilst iterating over the moves to keep track
+    // of the next position to draw from.
+    start.forEach((robot) => {
+      positions[robot.color] = {
+        row: robot.position.row,
+        column: robot.position.column
+      }
+    });
 
     context.save();
 
     moves.forEach((move) => {
-      const from = cellCoordinates[move.from.row][move.from.column],
+      const color = move.robot,
+        fromRow = positions[color].row,
+        fromColumn = positions[color].column,
+        from = cellCoordinates[fromRow][fromColumn],
         to = cellCoordinates[move.to.row][move.to.column],
-        color = move.robot.color,
         fromX = from.x + (size / 2),
         fromY = from.y + (size / 2),
         toX = to.x + (size / 2),
@@ -269,6 +282,12 @@ const BoardCanvas = Component.extend({
       context.lineWidth = 4;
       context.strokeStyle = color;
       context.stroke();
+
+      // Update robot position.
+      positions[color] = {
+        row: move.to.row,
+        column: move.to.column,
+      }
     });
 
     context.restore();

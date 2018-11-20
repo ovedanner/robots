@@ -1,8 +1,12 @@
 import Component from '@ember/component';
 import ActionCableSupport from '../mixins/action-cable-support';
-import { computed, observer } from '@ember/object';
+import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
+import { task, timeout } from 'ember-concurrency';
 
+/**
+ * Encompasses the multiplayer board.
+ */
 export default Component.extend(ActionCableSupport, {
   gameLog: service(),
   store: service(),
@@ -33,16 +37,28 @@ export default Component.extend(ActionCableSupport, {
   }),
 
   /**
-   * Observe the board for reaching the current goal. We might want to
-   * send the moves.
+   * Timer for the amount of time left to come up with a solution.
    */
-  isCurrentGoalReached: observer('board.currentGoalReached', function() {
-    if (this.board.currentGoalReached) {
-      this.performAction('solution_moves', {
-        moves: this.board.moves
-      });
+  solutionTimerTask: task(function * () {
+    this.set('solutionTimer', 10);
+
+    for (let i = 0; i < 10; i++) {
+      yield timeout(1000);
+      this.decrementProperty('solutionTimer');
     }
-  }),
+  }).drop(),
+
+  /**
+   * Timer for the amount of time left to come up with the right moves.
+   */
+  movesTimerTask: task(function * () {
+    this.set('movesTimer', 60);
+
+    for (let i = 0; i < 60; i++) {
+      yield timeout(1000);
+      this.decrementProperty('movesTimer');
+    }
+  }).drop(),
 
   actions: {
     /**
@@ -53,6 +69,13 @@ export default Component.extend(ActionCableSupport, {
     },
 
     /**
+     * Resets board moves.
+     */
+    resetMoves() {
+      this.board.resetRobotsToStart();
+    },
+
+    /**
      * Claim to have a solution in the given number of moves.
      * @param nrMoves
      */
@@ -60,6 +83,9 @@ export default Component.extend(ActionCableSupport, {
       this.performAction('has_solution_in', {
         nr_moves: nrMoves
       });
+
+      // Reset the input field
+      this.set('nrMoves', null);
     },
 
     /**
@@ -144,7 +170,16 @@ export default Component.extend(ActionCableSupport, {
 
     board.setRobotPositions(messageData.robot_positions);
     board.setCurrentGoal(messageData.current_goal);
-    this.set('board', board);
+
+    this.setProperties({
+      board: board,
+      cantProvideSolution: false,
+      canProvideMoves: false,
+    });
+
+    this.gameLog.addEvent({
+      message: `New board!`
+    });
   },
 
   /**
@@ -153,6 +188,8 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   hasSolutionIn(messageData) {
+    this.solutionTimerTask.perform();
+
     const bestSoFar = messageData.current_winner,
       nrMoves = messageData.current_nr_moves;
 
@@ -168,13 +205,17 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   closedForSolutions(messageData) {
+    this.solutionTimerTask.cancelAll();
+    this.movesTimerTask.perform();
+
     const bestSoFar = messageData.current_winner,
       bestSoFarId = messageData.current_winner_id;
 
     this.setProperties({
       cantProvideSolution: true,
-      canProvideMoves: (this.user.get('id') === bestSoFarId)
+      canProvideMoves: (parseInt(this.user.get('id')) === bestSoFarId)
     });
+
     this.gameLog.addEvent({
       message: `Time's up! Waiting for ${bestSoFar} to provide his moves.`
     });
@@ -184,7 +225,9 @@ export default Component.extend(ActionCableSupport, {
    * Nobody can provide moves anymore.
    */
   closedForMoves() {
+    this.movesTimerTask.cancelAll();
     this.set('canProvideMoves', false);
+
     this.gameLog.addEvent({
       message: `The winner can't provide moves anymore.`
     });

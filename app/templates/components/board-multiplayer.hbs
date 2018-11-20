@@ -1,5 +1,5 @@
 <div id="game-controls" class="d-flex flex-column gray-borders mr-2 p-2">
-  {{#if (and userOwnsRoom (not board))}}
+  {{#if userOwnsRoom}}
     {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
     <p>This will generate a new board and start the game</p>
   {{/if}}
@@ -22,6 +22,19 @@
         disabled=cantProvideSolution
         classNames="ml-2"}}
     </div>
+    {{#if (gt board.moves.length 0)}}
+      {{bs-button
+        defaultText="Reset"
+        type="primary"
+        onClick=(action "resetMoves")
+        classNames="mt-2"}}
+    {{/if}}
+    {{#if solutionTimerTask.isRunning}}
+      <p>Time left to provide solution: {{solutionTimer}}</p>
+    {{/if}}
+    {{#if (and canProvideMoves movesTimerTask.isRunning)}}
+      <p>Time left to provide moves: {{movesTimer}}</p>
+    {{/if}}
   {{/if}}
 </div>
 {{#if board}}

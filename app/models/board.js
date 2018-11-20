@@ -195,7 +195,7 @@ export default DS.Model.extend({
 
     if (clickedRobot) {
       // Clicked a cell with a robot.
-      this.selectedRobot = clickedRobot;
+      this.set('selectedRobot', clickedRobot);
     } else if (selectedRobot) {
       // Clicked on a cell without robot. If a robot is selected
       // and the move is allowed, update the position of the robot.
@@ -218,11 +218,7 @@ export default DS.Model.extend({
   moveRobotToCell(robot, row, column) {
     // Record the move.
     this.moves.pushObject({
-      robot: robot,
-      from: {
-        row: robot.position.row,
-        column: robot.position.column,
-      },
+      robot: robot.color,
       to: {
         row: row,
         column: column,
