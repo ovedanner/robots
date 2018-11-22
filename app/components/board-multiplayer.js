@@ -1,8 +1,8 @@
 import Component from '@ember/component';
-import ActionCableSupport from '../mixins/action-cable-support';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
+import ActionCableSupport from '../mixins/action-cable-support';
 
 /**
  * Encompasses the multiplayer board.
@@ -30,16 +30,21 @@ export default Component.extend(ActionCableSupport, {
   canProvideMoves: false,
 
   /**
+   * Is the game ready for the next goal?
+   */
+  readyForNextGoal: false,
+
+  /**
    * Does the user own the room? If so, he has more controls.
    */
-  userOwnsRoom: computed('user.id', 'room.owner.id', function() {
+  userOwnsRoom: computed('user.id', 'room.owner.id', function () {
     return this.user.get('id') === this.room.owner.get('id');
   }),
 
   /**
    * Timer for the amount of time left to come up with a solution.
    */
-  solutionTimerTask: task(function * () {
+  solutionTimerTask: task(function* () {
     this.set('solutionTimer', 10);
 
     for (let i = 0; i < 10; i++) {
@@ -51,7 +56,7 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Timer for the amount of time left to come up with the right moves.
    */
-  movesTimerTask: task(function * () {
+  movesTimerTask: task(function* () {
     this.set('movesTimer', 60);
 
     for (let i = 0; i < 60; i++) {
@@ -64,8 +69,8 @@ export default Component.extend(ActionCableSupport, {
     /**
      * Start a new game.
      */
-    start() {
-      this.performAction('start');
+    startNewGame() {
+      this.performAction('start_new_game');
     },
 
     /**
@@ -76,12 +81,19 @@ export default Component.extend(ActionCableSupport, {
     },
 
     /**
+     * Get the next goal.
+     */
+    getNextGoal() {
+      this.performAction('next_goal');
+    },
+
+    /**
      * Claim to have a solution in the given number of moves.
      * @param nrMoves
      */
     sendNumberOfMoves(nrMoves) {
       this.performAction('has_solution_in', {
-        nr_moves: nrMoves
+        nr_moves: nrMoves,
       });
 
       // Reset the input field
@@ -99,17 +111,17 @@ export default Component.extend(ActionCableSupport, {
       // If the current goal has been reached
       if (reachedCurrentGoal && this.canProvideMoves) {
         this.performAction('solution_moves', {
-          moves: this.board.moves
+          moves: this.board.moves,
         });
       }
-    }
+    },
   },
 
   /**
    * Initialize events array and setup socket stuff.
    */
-  didInsertElement() {
-    this._super(...arguments);
+  didInsertElement(...args) {
+    this._super(args);
 
     this.setupSocket({
       open: this.socketOpen,
@@ -122,7 +134,7 @@ export default Component.extend(ActionCableSupport, {
    */
   socketOpen() {
     this.subscribeToChannel('GameChannel', {
-      room: this.room.id
+      room: this.room.id,
     });
   },
 
@@ -133,27 +145,40 @@ export default Component.extend(ActionCableSupport, {
   socketMessage(event) {
     const data = JSON.parse(event.data);
 
-    if (data.message) {
-      switch (data.message.action) {
-        // Starts a new game.
-        case 'start':
-          this.startNewGame(data.message);
-          break;
-        // Somebody has a new best solution!
-        case 'has_solution_in':
-          this.hasSolutionIn(data.message);
-          break;
-
-        // Nobody can provide solutions anymore.
-        case 'closed_for_solutions':
-          this.closedForSolutions(data.message);
-          break;
-
-        // The best so far can't provide his moves anymore.
-        case 'closed_for_moves':
-          this.closedForMoves(data.message);
-          break;
-      }
+    if (data.message && data.message.action) {
+      this[data.message.action.camelize()].call(this, data.message);
+      // switch (data.message.action) {
+      //   // Starts a new game.
+      //   case 'start':
+      //     this.startNewGame(data.message);
+      //     break;
+      //   // Somebody has a new best solution!
+      //   case 'has_solution_in':
+      //     this.hasSolutionIn(data.message);
+      //     break;
+      //
+      //   // Nobody can provide solutions anymore.
+      //   case 'closed_for_solutions':
+      //     this.closedForSolutions(data.message);
+      //     break;
+      //
+      //   // The best so far can't provide his moves anymore.
+      //   case 'closed_for_moves':
+      //     this.closedForMoves(data.message);
+      //     break;
+      //
+      //   case 'goal_won_by':
+      //     this.goalWonBy(data.message);
+      //     break;
+      //
+      //   case 'new_goal':
+      //     this.newGoal(data.message);
+      //     break;
+      //
+      //   case 'game_finished':
+      //     this.gameFinished();
+      //     break;
+      // }
     }
   },
 
@@ -165,20 +190,20 @@ export default Component.extend(ActionCableSupport, {
     const board = this.store.createRecord('board', {
       cells: messageData.cells,
       goals: messageData.goals,
-      robotColors: messageData.robot_colors
+      robotColors: messageData.robot_colors,
     });
 
     board.setRobotPositions(messageData.robot_positions);
     board.setCurrentGoal(messageData.current_goal);
 
     this.setProperties({
-      board: board,
+      board,
       cantProvideSolution: false,
       canProvideMoves: false,
     });
 
     this.gameLog.addEvent({
-      message: `New board!`
+      message: 'New board!',
     });
   },
 
@@ -190,11 +215,11 @@ export default Component.extend(ActionCableSupport, {
   hasSolutionIn(messageData) {
     this.solutionTimerTask.perform();
 
-    const bestSoFar = messageData.current_winner,
-      nrMoves = messageData.current_nr_moves;
+    const bestSoFar = messageData.current_winner;
+    const nrMoves = messageData.current_nr_moves;
 
     this.gameLog.addEvent({
-      message: `${bestSoFar} has a solution in ${nrMoves} moves!`
+      message: `${bestSoFar} has a solution in ${nrMoves} moves!`,
     });
   },
 
@@ -208,16 +233,16 @@ export default Component.extend(ActionCableSupport, {
     this.solutionTimerTask.cancelAll();
     this.movesTimerTask.perform();
 
-    const bestSoFar = messageData.current_winner,
-      bestSoFarId = messageData.current_winner_id;
+    const bestSoFar = messageData.current_winner;
+    const bestSoFarId = messageData.current_winner_id;
 
     this.setProperties({
       cantProvideSolution: true,
-      canProvideMoves: (parseInt(this.user.get('id')) === bestSoFarId)
+      canProvideMoves: (parseInt(this.user.get('id'), 10) === bestSoFarId),
     });
 
     this.gameLog.addEvent({
-      message: `Time's up! Waiting for ${bestSoFar} to provide his moves.`
+      message: `Time's up! Waiting for ${bestSoFar} to provide his moves.`,
     });
   },
 
@@ -226,10 +251,54 @@ export default Component.extend(ActionCableSupport, {
    */
   closedForMoves() {
     this.movesTimerTask.cancelAll();
-    this.set('canProvideMoves', false);
+    this.setProperties({
+      readyForNextGoal: true,
+      canProvideMoves: false,
+    });
 
     this.gameLog.addEvent({
-      message: `The winner can't provide moves anymore.`
+      message: 'The winner can\'t provide moves anymore.',
     });
-  }
+  },
+
+  /**
+   * There is a new goal!
+   * @param messageData
+   */
+  newGoal(messageData) {
+    this.setProperties({
+      readyForNextGoal: false,
+      cantProvideSolution: false,
+      canProvideMoves: false,
+    });
+
+    this.board.setCurrentGoal(messageData.goal);
+  },
+
+  /**
+   * The goal is won by.
+   * @param messageData
+   */
+  goalWonBy(messageData) {
+    this.movesTimerTask.cancelAll();
+    this.setProperties({
+      readyForNextGoal: true,
+      canProvideMoves: false,
+    });
+
+    this.gameLog.addEvent({
+      message: `The round is won by ${messageData.winner}!`,
+    });
+  },
+
+  /**
+   * No more goals, the game is finished!
+   */
+  gameFinished() {
+    this.board.setCurrentGoal(null);
+
+    this.gameLog.addEvent({
+      message: 'The game is finished!',
+    });
+  },
 });

@@ -66,15 +66,14 @@ export default DS.Model.extend({
   /**
    * Returns an array of column cells instead of row cells.
    */
-  columnCells: computed('cells.length', function() {
-    const cells = this.cells;
-    let columns = [];
+  columnCells: computed('cells.length', function () {
+    const columns = [];
 
-    for (let i = 0; i < cells.length; i++) {
-      let column = [];
+    for (let i = 0; i < this.cells.length; i++) {
+      const column = [];
 
-      for (let j = 0; j < cells.length; j++) {
-        column.push(cells[j][i]);
+      for (let j = 0; j < this.cells.length; j++) {
+        column.push(this.cells[j][i]);
       }
 
       columns.push(column);
@@ -93,16 +92,13 @@ export default DS.Model.extend({
    * Initializes the robots on the board.
    */
   initializeRobots() {
-    const cells = this.cells,
-      nrRows = this.nrRows,
-      nrColumns = this.nrColumns,
-      positions = [],
-      robots = [];
+    const positions = [];
+    const robots = [];
 
     // A robot can never be in a cell with four walls.
-    for (let i = 0; i < nrRows; i++) {
-      for (let j = 0; j < nrColumns; j++) {
-        if (cells[i][j] !== 15) {
+    for (let i = 0; i < this.nrRows; i++) {
+      for (let j = 0; j < this.nrColumns; j++) {
+        if (this.cells[i][j] !== 15) {
           positions.push({
             row: i,
             column: j,
@@ -112,25 +108,25 @@ export default DS.Model.extend({
     }
 
     this.robotColors.forEach((color) => {
-      let index = Math.floor(Math.random() * positions.length),
-        position = positions[index];
+      const index = Math.floor(Math.random() * positions.length);
+      const position = positions[index];
 
       // Remove the position, so no two robots will begin in the same spot.
       positions.removeObject(position);
 
       // Convert the index to row and column indices.
       robots.pushObject({
-        color: color,
+        color,
         position: {
           row: position.row,
           column: position.column,
-        }
+        },
       });
     });
 
     // Also record initial robot positions.
     this.setProperties({
-      robots: robots,
+      robots,
       selectedRobot: null,
       moves: [],
     });
@@ -152,11 +148,8 @@ export default DS.Model.extend({
    * Resets the robots to the start of the play.
    */
   resetRobotsToStart() {
-    const robots = this.robots,
-      start = this.start;
-
-    start.forEach((startPos) => {
-      const robot = robots.findBy('color', startPos.color);
+    this.start.forEach((startPos) => {
+      const robot = this.robots.findBy('color', startPos.color);
 
       robot.position = JSON.parse(JSON.stringify(startPos.position));
     });
@@ -170,16 +163,16 @@ export default DS.Model.extend({
    */
   setCurrentGoal(goal) {
     // Make sure the start positions equal those of the robots.
-    let start = this.robots.map((robot) => {
+    const start = this.robots.map((robot) => {
       return JSON.parse(JSON.stringify(robot));
     });
 
     this.setProperties({
       currentGoal: goal,
       moves: [],
-      start: start,
+      start,
       selectedRobot: null,
-    })
+    });
   },
 
   /**
@@ -189,21 +182,20 @@ export default DS.Model.extend({
   click(row, column) {
     // First determine if a robot or a target cell is clicked.
     const clickedRobot = this.robots.find((robot) => {
-        return robot.position.row === row && robot.position.column === column;
-      }),
-      selectedRobot = this.selectedRobot;
+      return robot.position.row === row && robot.position.column === column;
+    });
 
     if (clickedRobot) {
       // Clicked a cell with a robot.
       this.set('selectedRobot', clickedRobot);
-    } else if (selectedRobot) {
+    } else if (this.selectedRobot) {
       // Clicked on a cell without robot. If a robot is selected
       // and the move is allowed, update the position of the robot.
-      const fromRow = selectedRobot.position.row,
-        fromColumn = selectedRobot.position.column;
+      const fromRow = this.selectedRobot.position.row;
+      const fromColumn = this.selectedRobot.position.column;
 
       if (this.canMoveToCell(fromRow, fromColumn, row, column)) {
-        return this.moveRobotToCell(selectedRobot, row, column);
+        return this.moveRobotToCell(this.selectedRobot, row, column);
       }
     }
 
@@ -220,15 +212,15 @@ export default DS.Model.extend({
     this.moves.pushObject({
       robot: robot.color,
       to: {
-        row: row,
-        column: column,
-      }
+        row,
+        column,
+      },
     });
 
     // Update robot position.
     robot.position = {
-      row: row,
-      column: column,
+      row,
+      column,
     };
 
     // Check if the goal was reached by the appropriate robot.
@@ -253,35 +245,32 @@ export default DS.Model.extend({
       return false;
     }
 
-    const cells = this.cells,
-      columnCells = this.columnCells;
-
     if (fromRow === toRow) {
       // We're moving horizontally.
       if (fromColumn < toColumn) {
         // To the right.
-        return cells[fromRow].every((cell, idx) => {
+        return this.cells[fromRow].every((cell, idx) => {
           if (idx > fromColumn && idx < toColumn) {
             return this.validPathCell(fromRow, idx, 'right');
           } else if (idx === toColumn) {
             return this.validTargetCell(fromRow, idx, 'right');
           } else if (idx === fromColumn) {
             // Start cell can't have a right wall.
-            return (cells[fromRow][fromColumn] & 2) === 0;
+            return (this.cells[fromRow][fromColumn] & 2) === 0;
           }
 
           return true;
         });
       } else {
         // To the left.
-        return cells[fromRow].every((cell, idx) => {
+        return this.cells[fromRow].every((cell, idx) => {
           if (idx < fromColumn && idx > toColumn) {
             return this.validPathCell(fromRow, idx, 'left');
           } else if (idx === toColumn) {
             return this.validTargetCell(fromRow, idx, 'left');
           } else if (idx === fromColumn) {
             // Start cell can't have a left wall.
-            return (cells[fromRow][fromColumn] & 8) === 0;
+            return (this.cells[fromRow][fromColumn] & 8) === 0;
           }
 
           return true;
@@ -291,28 +280,28 @@ export default DS.Model.extend({
       // We're moving vertically.
       if (fromRow < toRow) {
         // Down.
-        return columnCells[fromColumn].every((cell, idx) => {
+        return this.columnCells[fromColumn].every((cell, idx) => {
           if (idx < fromRow && idx > toRow) {
             return this.validPathCell(idx, fromColumn, 'down');
           } else if (idx === toRow) {
             return this.validTargetCell(idx, fromColumn, 'down');
           } else if (idx === fromRow) {
             // Start cell can't have a bottom wall.
-            return (cells[fromRow][fromColumn] & 4) === 0;
+            return (this.cells[fromRow][fromColumn] & 4) === 0;
           }
 
           return true;
         });
       } else {
         // Up.
-        return columnCells[fromColumn].every((cell, idx) => {
+        return this.columnCells[fromColumn].every((cell, idx) => {
           if (idx > fromRow && idx < toRow) {
             return this.validPathCell(idx, fromColumn, 'up');
           } else if (idx === toRow) {
             return this.validTargetCell(idx, fromColumn, 'up');
           } else if (idx === fromRow) {
             // Start cell can't have a top wall.
-            return (cells[fromRow][fromColumn] & 1) === 0;
+            return (this.cells[fromRow][fromColumn] & 1) === 0;
           }
 
           return true;
@@ -339,19 +328,17 @@ export default DS.Model.extend({
    * cell, but not the start or finish cell.
    */
   validPathCell(row, column, direction) {
-    const cells = this.cells;
-
     // A path cell can never contain a robot.
     let result = !this.cellContainsRobot(row, column);
 
     switch (direction) {
       case 'up':
       case 'down':
-        result = result && (cells[row][column] & 5) === 0;
+        result = result && (this.cells[row][column] & 5) === 0;
         break;
       case 'left':
       case 'right':
-        result = result && (cells[row][column] & 10) === 0;
+        result = result && (this.cells[row][column] & 10) === 0;
         break;
       default:
         result = false;
@@ -365,46 +352,39 @@ export default DS.Model.extend({
    * given direction.
    */
   validTargetCell(row, column, direction) {
-    const cells = this.cells;
-    let result = null;
-
-    switch(direction) {
+    switch (direction) {
       case 'up':
-        result = (cells[row][column] & 1) > 0 ||
+        return (this.cells[row][column] & 1) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row - 1, column));
-        break;
       case 'right':
-        result = (cells[row][column] & 2) > 0 ||
+        return (this.cells[row][column] & 2) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row, column + 1));
-        break;
       case 'down':
-        result = (cells[row][column] & 4) > 0 ||
+        return (this.cells[row][column] & 4) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row + 1, column));
-        break;
       case 'left':
-        result = (cells[row][column] & 8) > 0 ||
+        return (this.cells[row][column] & 8) > 0 ||
           (this.nextCellExists(row, column, direction) && this.cellContainsRobot(row, column - 1));
-        break;
+      default:
+        return null;
     }
-
-    return result;
   },
 
   /**
    * Determines if the given cell has a cell next to it in the given direction.
    */
   nextCellExists(row, column, direction) {
-    const cells = this.cells;
-
-    switch(direction) {
+    switch (direction) {
       case 'up':
         return (row - 1) >= 0;
       case 'right':
-        return (column + 1) <= (cells[row].length - 1);
+        return (column + 1) <= (this.cells[row].length - 1);
       case 'down':
-        return (row + 1) <= (cells.length - 1);
+        return (row + 1) <= (this.cells.length - 1);
       case 'left':
         return (column - 1) >= 0;
+      default:
+        return false;
     }
   },
 
@@ -424,8 +404,8 @@ export default DS.Model.extend({
    * @returns {number[]}
    */
   getGoalIndices(goal) {
-    const goalRowIdx = Math.floor(goal.number / this.nrRows),
-      goalColumnIdx = goal.number % this.nrColumns;
+    const goalRowIdx = Math.floor(goal.number / this.nrRows);
+    const goalColumnIdx = goal.number % this.nrColumns;
 
     return [goalRowIdx, goalColumnIdx];
   },

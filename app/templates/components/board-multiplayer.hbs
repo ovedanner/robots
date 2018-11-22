@@ -1,10 +1,12 @@
 <div id="game-controls" class="d-flex flex-column gray-borders mr-2 p-2">
   {{#if userOwnsRoom}}
-    {{bs-button defaultText="Start" type="primary" onClick=(action "start")}}
-    <p>This will generate a new board and start the game</p>
+    {{bs-button defaultText="Start new game" type="primary" onClick=(action "startNewGame") classNames="mb-2"}}
+  {{/if}}
+  {{#if (and userOwnsRoom readyForNextGoal)}}
+    {{bs-button defaultText="Next goal" type="primary" onClick=(action "getNextGoal") classNames="mb-2"}}
   {{/if}}
   {{#if board}}
-    <div class="d-flex">
+    <div class="d-flex mb-2">
       <div class="flex-grow-1 mr-2">
         {{input
           value=nrMoves
@@ -27,13 +29,13 @@
         defaultText="Reset"
         type="primary"
         onClick=(action "resetMoves")
-        classNames="mt-2"}}
+        classNames="mb-2"}}
     {{/if}}
     {{#if solutionTimerTask.isRunning}}
-      <p>Time left to provide solution: {{solutionTimer}}</p>
+      <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
     {{/if}}
     {{#if (and canProvideMoves movesTimerTask.isRunning)}}
-      <p>Time left to provide moves: {{movesTimer}}</p>
+      <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
     {{/if}}
   {{/if}}
 </div>
