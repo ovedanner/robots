@@ -12,8 +12,8 @@ export default Service.extend({
    */
   plays: null,
 
-  init() {
-    this._super(...arguments);
+  init(...args) {
+    this._super(args);
     this.set('plays', {});
   },
 
@@ -41,7 +41,7 @@ export default Service.extend({
 
     assert('Board must be registered', !!boardProperties);
 
-    return boardProperties
+    return boardProperties;
   },
 
   /**
@@ -83,7 +83,8 @@ export default Service.extend({
     boardProperties.remainingGoals.removeObject(goal);
 
     // Log all the moves for the completed goal.
-    boardProperties.completedGoals[board.getGoalId(goal)] = JSON.parse(JSON.stringify(board.getCurrentMoves()));
+    boardProperties.completedGoals[board.getGoalId(goal)] =
+      JSON.parse(JSON.stringify(board.getCurrentMoves()));
 
     const newGoal = this.getNextGoal(board);
 
@@ -110,14 +111,14 @@ export default Service.extend({
    * Retrieves the next goal to solve for a given board.
    */
   getNextGoal(board) {
-    const boardProperties = this.getProperties(board),
-      goals = board.goals,
-      completed = Object.keys(boardProperties.completedGoals);
+    const boardProperties = this.getProperties(board);
+    const { goals } = board;
+    const completed = Object.keys(boardProperties.completedGoals);
 
     const possibleGoals = goals.filter((goal) => {
-        return !completed.includes(board.getGoalId(goal));
-      }),
-      index = Math.floor(Math.random() * possibleGoals.length);
+      return !completed.includes(board.getGoalId(goal));
+    });
+    const index = Math.floor(Math.random() * possibleGoals.length);
 
     return (possibleGoals.length > 0 ? possibleGoals[index] : null);
   },

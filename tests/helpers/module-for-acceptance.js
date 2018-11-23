@@ -1,8 +1,9 @@
 import { Promise } from 'rsvp';
 import { module } from 'qunit';
-import startApp from '../helpers/start-app';
-import destroyApp from '../helpers/destroy-app';
+import startApp from './start-app';
+import destroyApp from './destroy-app';
 
+/* eslint-disable */
 export default function(name, options = {}) {
   module(name, {
     beforeEach() {
@@ -19,3 +20,4 @@ export default function(name, options = {}) {
     }
   });
 }
+/* eslint-enable */

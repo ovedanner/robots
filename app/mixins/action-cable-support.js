@@ -7,7 +7,6 @@ import { inject as service } from '@ember/service';
  * ActionCable.
  */
 export default Mixin.create({
-
   websockets: service(),
   session: service(),
 
@@ -28,9 +27,9 @@ export default Mixin.create({
     socket.on('close', options.close || this.defaultClose, this);
 
     this.setProperties({
-      socket: socket,
-      socketOptions: options
-    })
+      socket,
+      socketOptions: options,
+    });
   },
 
   /**
@@ -42,7 +41,7 @@ export default Mixin.create({
     const identifier = JSON.stringify(Object.assign(params || {}, { channel: channelName }));
     const message = {
       command: 'subscribe',
-      identifier: identifier,
+      identifier,
     };
 
     this.socket.send(JSON.stringify(message));
@@ -55,21 +54,21 @@ export default Mixin.create({
    * @param data
    */
   performAction(action, data) {
-    const payload = Object.assign(data || {}, { action: action });
+    const payload = Object.assign(data || {}, { action });
     const message = {
       command: 'message',
       identifier: this.channelIdentifier,
-      data: JSON.stringify(payload)
+      data: JSON.stringify(payload),
     };
 
-    this.socket.send(JSON.stringify(message))
+    this.socket.send(JSON.stringify(message));
   },
 
   /**
    * Socket teardown.
    */
   teardownSocket() {
-    const socket = this.socket;
+    const { socket } = this;
 
     // Remove handlers.
     socket.off('open', this.socketOptions.open);
@@ -87,5 +86,5 @@ export default Mixin.create({
 
   defaultClose() {
     return true;
-  }
+  },
 });

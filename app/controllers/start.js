@@ -6,8 +6,8 @@ export default Controller.extend({
       this.session.authenticate('authenticator:torii', 'google');
     },
 
-    logout: function() {
+    logout() {
       this.session.invalidate();
     },
-  }
+  },
 });

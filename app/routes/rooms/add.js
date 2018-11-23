@@ -5,16 +5,16 @@ export default Route.extend({
 
   model() {
     return this.store.createRecord('room', {
-      owner: this.session.user
-    })
+      owner: this.session.user,
+    });
   },
 
-  deactivate() {
+  deactivate(...args) {
     const room = this.modelFor(this.routeName);
     if (room.get('hasDirtyAttributes')) {
       room.destroyRecord();
     }
 
-    this._super(...arguments);
-  }
+    this._super(args);
+  },
 });

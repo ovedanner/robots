@@ -10,9 +10,9 @@ export default Component.extend({
    * the room is open.
    */
   userCanJoinRoom: computed('room.{owner,open}', 'user', function() {
-    const ownerId = this.room.owner.get('id'),
-      userId = this.user.get('id');
+    const ownerId = this.room.owner.get('id');
+    const userId = this.user.get('id');
 
     return ownerId === userId || this.room.open;
-  })
+  }),
 });

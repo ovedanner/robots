@@ -9,12 +9,12 @@ export default SessionService.extend({
   token: alias('data.authenticated.token'),
   tokenId: alias('data.authenticated.tokenId'),
   user: computed('data.authenticated.userId', function() {
-    const userId = this.data.authenticated.userId;
+    const { userId } = this.data.authenticated;
 
     if (userId) {
       return this.store.findRecord('user', userId);
     }
 
     return null;
-  })
+  }),
 });

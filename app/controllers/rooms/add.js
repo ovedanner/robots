@@ -11,6 +11,6 @@ export default Controller.extend({
     closeModal(modal) {
       modal.close();
       this.transitionToRoute('rooms');
-    }
-  }
+    },
+  },
 });

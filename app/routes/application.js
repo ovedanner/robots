@@ -8,16 +8,18 @@ export default Route.extend(ApplicationRouteMixin, {
       if (isUnauthorizedError(error)) {
         this.session.invalidate();
       }
-    }
+    },
   },
 
   /**
    * Load the user if we're authenticated.
-   * @returns {number | user | Function}
+   * @returns {*}
    */
   beforeModel() {
     if (this.session.isAuthenticated) {
       return this.session.user;
     }
+
+    return true;
   },
 });

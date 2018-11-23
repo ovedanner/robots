@@ -10,14 +10,14 @@ export default AjaxService.extend({
 
   headers: computed('session.token', {
     get() {
-      let headers = {};
+      const headers = {};
       const authToken = this.session.token;
 
       if (authToken) {
-        headers['Authorization'] = `Token token="${authToken}"`;
+        headers.Authorization = `Token token="${authToken}"`;
       }
 
       return headers;
-    }
-  })
-})
+    },
+  }),
+});

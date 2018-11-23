@@ -9,7 +9,7 @@ const colorMap = {
   blue: '#7EA7D2',
   red: '#F58C8F',
   yellow: '#FEF87D',
-  green: '#C3E17E'
+  green: '#C3E17E',
 };
 
 /**
@@ -92,25 +92,20 @@ const BoardCanvas = Component.extend({
 
     this.set('context', canvas.getContext('2d'));
 
-    const board = this.board,
-      cells = board.cells,
-      cellCoordinates = [],
-      cellSize = this.cellSize,
-      nrRows = board.nrRows,
-      nrColumns = board.nrColumns,
-      xStart = parseInt((canvas.clientWidth - (nrColumns * cellSize)) / 2),
-      yStart = parseInt((canvas.clientHeight - (nrRows * cellSize)) / 2);
+    const { cells, nrRows, nrColumns } = this.board;
+    const cellCoordinates = [];
+    const xStart = parseInt((canvas.clientWidth - (nrColumns * this.cellSize)) / 2, 10);
+    const yStart = parseInt((canvas.clientHeight - (nrRows * this.cellSize)) / 2, 10);
 
     // Cache cell coordinates.
     cells.forEach((row, rowIdx) => {
       cellCoordinates.push([]);
       row.forEach((column, columnIdx) => {
-        let x = xStart + (columnIdx * cellSize),
-          y = yStart + (rowIdx * cellSize);
+        const x = xStart + (columnIdx * this.cellSize);
+        const y = yStart + (rowIdx * this.cellSize);
 
         cellCoordinates[rowIdx].push({
-          x: x,
-          y: y,
+          x, y,
         });
       });
     });
@@ -125,24 +120,23 @@ const BoardCanvas = Component.extend({
    * - Robots
    */
   draw() {
-    const board = this.board,
-      cells = board.cells,
-      nrRows = cells.length,
-      nrColumns = nrRows,
-      context = this.context,
-      canvas = context.canvas;
-    let goalColor,
-      goalRowIdx,
-      goalColumnIdx;
+    const { board } = this;
+    const { cells } = board;
+    const nrRows = cells.length;
+    const nrColumns = nrRows;
+    const { canvas } = this.context;
+    let goalColor;
+    let goalRowIdx;
+    let goalColumnIdx;
 
     // For now simply clear the whole canvas and draw everything again.
-    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    this.context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
     // If there is a current goal, get its target cell.
     if (board.currentGoal) {
-      const number = board.currentGoal.number;
+      const { number } = board.currentGoal;
 
-      goalColor = board.currentGoal.color;
+      goalColor = this.board.currentGoal.color;
       goalRowIdx = Math.floor(number / nrRows);
       goalColumnIdx = number % nrColumns;
     }
@@ -178,42 +172,41 @@ const BoardCanvas = Component.extend({
    * Draws the given cell at the given coordinates.
    */
   drawCell(cell, x, y, color) {
-    let context = this.context,
-      size = this.cellSize,
-      wallColor = this.wallColor,
-      wallSize = this.wallSize,
-      top = (cell & 1) > 0,
-      right = (cell & 2) > 0,
-      bottom = (cell & 4) > 0,
-      left = (cell & 8) > 0;
+    const {
+      context, cellSize, wallColor, wallSize,
+    } = this;
+    const top = (cell & 1) > 0;
+    const right = (cell & 2) > 0;
+    const bottom = (cell & 4) > 0;
+    const left = (cell & 8) > 0;
 
     // Cells with four walls are colored in.
     if (cell === 15) {
       context.fillStyle = 'gray';
-      context.fillRect(x, y, size, size);
+      context.fillRect(x, y, cellSize, cellSize);
     } else {
       context.fillStyle = color;
-      context.fillRect(x, y, size, size);
+      context.fillRect(x, y, cellSize, cellSize);
 
       // Background cell borders.
       context.strokeStyle = '#3B3E40';
-      context.strokeRect(x, y, size, size);
+      context.strokeRect(x, y, cellSize, cellSize);
 
       if (top) {
         context.fillStyle = wallColor;
-        context.fillRect(x, y, size, wallSize);
+        context.fillRect(x, y, cellSize, wallSize);
       }
       if (right) {
         context.fillStyle = wallColor;
-        context.fillRect((x + size) - wallSize, y, wallSize, size);
+        context.fillRect((x + cellSize) - wallSize, y, wallSize, cellSize);
       }
       if (bottom) {
         context.fillStyle = wallColor;
-        context.fillRect(x, (y + size) - wallSize, size, wallSize);
+        context.fillRect(x, (y + cellSize) - wallSize, cellSize, wallSize);
       }
       if (left) {
         context.fillStyle = wallColor;
-        context.fillRect(x, y, wallSize, size);
+        context.fillRect(x, y, wallSize, cellSize);
       }
     }
   },
@@ -222,18 +215,16 @@ const BoardCanvas = Component.extend({
    * Draws robot placeholders to show the initial positions.
    */
   drawRobotStart(start) {
-    const size = this.cellSize,
-      radius = size / 8,
-      context = this.context,
-      cellCoordinates = this.cellCoordinates;
+    const { cellSize, context, cellCoordinates } = this;
+    const radius = cellSize / 8;
 
     context.save();
 
     start.forEach((robot) => {
-      const pos = robot.position,
-        coordinates = cellCoordinates[pos.row][pos.column],
-        x = coordinates.x + (size / 2),
-        y = coordinates.y + (size / 2);
+      const pos = robot.position;
+      const coordinates = cellCoordinates[pos.row][pos.column];
+      const x = coordinates.x + (cellSize / 2);
+      const y = coordinates.y + (cellSize / 2);
 
       context.beginPath();
       context.arc(x, y, radius, 0, 2 * Math.PI, false);
@@ -248,10 +239,8 @@ const BoardCanvas = Component.extend({
    * Draws the given moves.
    */
   drawMoves(moves, start) {
-    let size = this.cellSize,
-      context = this.context,
-      cellCoordinates = this.cellCoordinates,
-      positions = {};
+    const { cellSize, context, cellCoordinates } = this;
+    const positions = {};
 
     // Make a copy of the current robot positions and update
     // this whilst iterating over the moves to keep track
@@ -259,22 +248,22 @@ const BoardCanvas = Component.extend({
     start.forEach((robot) => {
       positions[robot.color] = {
         row: robot.position.row,
-        column: robot.position.column
-      }
+        column: robot.position.column,
+      };
     });
 
     context.save();
 
     moves.forEach((move) => {
-      const color = move.robot,
-        fromRow = positions[color].row,
-        fromColumn = positions[color].column,
-        from = cellCoordinates[fromRow][fromColumn],
-        to = cellCoordinates[move.to.row][move.to.column],
-        fromX = from.x + (size / 2),
-        fromY = from.y + (size / 2),
-        toX = to.x + (size / 2),
-        toY = to.y + (size / 2);
+      const color = move.robot;
+      const fromRow = positions[color].row;
+      const fromColumn = positions[color].column;
+      const from = cellCoordinates[fromRow][fromColumn];
+      const to = cellCoordinates[move.to.row][move.to.column];
+      const fromX = from.x + (cellSize / 2);
+      const fromY = from.y + (cellSize / 2);
+      const toX = to.x + (cellSize / 2);
+      const toY = to.y + (cellSize / 2);
 
       context.beginPath();
       context.moveTo(fromX, fromY);
@@ -287,7 +276,7 @@ const BoardCanvas = Component.extend({
       positions[color] = {
         row: move.to.row,
         column: move.to.column,
-      }
+      };
     });
 
     context.restore();
@@ -297,15 +286,13 @@ const BoardCanvas = Component.extend({
    * Draws the given robot.
    */
   drawRobot(robot) {
-    const pos = robot.position,
-      size = this.cellSize,
-      radius = size / 4,
-      selectedRadius = size / 7,
-      board = this.board,
-      context = this.context,
-      coordinates = this.cellCoordinates[pos.row][pos.column],
-      x = coordinates.x + (size / 2),
-      y = coordinates.y + (size / 2);
+    const { cellSize, board, context } = this;
+    const pos = robot.position;
+    const radius = cellSize / 4;
+    const selectedRadius = cellSize / 7;
+    const coordinates = this.cellCoordinates[pos.row][pos.column];
+    const x = coordinates.x + (cellSize / 2);
+    const y = coordinates.y + (cellSize / 2);
 
     // Draw a circle filled with the robot color.
     context.save();
@@ -336,11 +323,11 @@ const BoardCanvas = Component.extend({
    * Click handler for the canvas.
    */
   click(x, y) {
-    const boardPosition = document.querySelector('#board').getBoundingClientRect(),
-      topLeftX = boardPosition.x,
-      bottomRightX = boardPosition.x + boardPosition.width,
-      topLeftY = boardPosition.y,
-      bottomRightY = boardPosition.y + boardPosition.height;
+    const boardPosition = document.querySelector('#board').getBoundingClientRect();
+    const topLeftX = boardPosition.x;
+    const bottomRightX = boardPosition.x + boardPosition.width;
+    const topLeftY = boardPosition.y;
+    const bottomRightY = boardPosition.y + boardPosition.height;
 
     // Correct event coordinates for window scroll.
     x -= (window.pageXOffset || document.documentElement.scrollLeft);
@@ -349,8 +336,8 @@ const BoardCanvas = Component.extend({
     // First check if the click is actually on the board.
     if (x >= topLeftX && x <= bottomRightX && y >= topLeftY && y <= bottomRightY) {
       // Translate the click coordinates into cell indices.
-      const rowIdx = Math.floor((y - topLeftY) / this.cellSize),
-        columnIdx = Math.floor((x - topLeftX) / this.cellSize);
+      const rowIdx = Math.floor((y - topLeftY) / this.cellSize);
+      const columnIdx = Math.floor((x - topLeftX) / this.cellSize);
 
       this.onClick(rowIdx, columnIdx);
     }
@@ -358,7 +345,7 @@ const BoardCanvas = Component.extend({
 });
 
 BoardCanvas.reopenClass({
-  positionalParams: ['board']
+  positionalParams: ['board'],
 });
 
 export default BoardCanvas;

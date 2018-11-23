@@ -7,12 +7,12 @@ export default Service.extend({
    */
   events: null,
 
-  init() {
-    this._super(...arguments);
+  init(...args) {
+    this._super(args);
     this.set('events', []);
   },
 
   addEvent(event) {
     this.events.pushObject(event);
-  }
+  },
 });

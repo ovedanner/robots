@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(environment) {
-  let ENV = {
+  const ENV = {
     modulePrefix: 'robots',
     environment,
     rootURL: '/',
@@ -13,8 +13,8 @@ module.exports = function(environment) {
       },
       EXTEND_PROTOTYPES: {
         // Prevent Ember Data from overriding Date.parse.
-        Date: false
-      }
+        Date: false,
+      },
     },
 
     APP: {
@@ -22,17 +22,17 @@ module.exports = function(environment) {
       // when it is created
     },
     contentSecurityPolicy: {
-      'connect-src': "'self' http://localhost:3000"
+      'connect-src': "'self' http://localhost:3000",
     },
     torii: {
       sessionServiceName: 'session',
       providers: {
         'google-oauth2': {
-          apiKey: "287879387971-vv9ukci4e72upoe7c7sbtojv6h9tp3ea.apps.googleusercontent.com",
-          redirectUri: "http://localhost:4200/torii/redirect.html"
-        }
-      }
-    }
+          apiKey: '287879387971-vv9ukci4e72upoe7c7sbtojv6h9tp3ea.apps.googleusercontent.com',
+          redirectUri: 'http://localhost:4200/torii/redirect.html',
+        },
+      },
+    },
   };
 
   if (environment === 'development') {

@@ -5,8 +5,8 @@ export default Base.extend(BaseAuthenticatorHandlers, {
   authenticate(email, password) {
     const credentials = {
       data: {
-        email: email,
-        password: password,
+        email,
+        password,
       },
     };
 
@@ -14,8 +14,8 @@ export default Base.extend(BaseAuthenticatorHandlers, {
       return {
         token: data.data.attributes.token,
         tokenId: data.data.id,
-        userId: data.data.relationships.user.data.id
-      }
+        userId: data.data.relationships.user.data.id,
+      };
     });
   },
 });

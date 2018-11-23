@@ -7,6 +7,6 @@ export default Component.extend({
   classNameBindings: ['ownMessage:own:other'],
 
   ownMessage: computed('event.author_id', 'user.id', function() {
-    return this.event.author_id === parseInt(this.user.get('id'));
-  })
+    return this.event.author_id === parseInt(this.user.get('id'), 10);
+  }),
 });

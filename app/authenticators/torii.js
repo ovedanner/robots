@@ -6,20 +6,20 @@ export default ToriiAuthenticator.extend(BaseAuthenticatorHandlers, {
   torii: service(),
   ajax: service(),
 
-  authenticate() {
-    return this._super(...arguments).then((data) => {
+  authenticate(...args) {
+    return this._super(args).then((data) => {
       const credentials = {
         data: {
-          code: data.authorizationCode
-        }
+          code: data.authorizationCode,
+        },
       };
 
-      return this.ajax.post('/access_tokens/google', credentials).then((data) => {
+      return this.ajax.post('/access_tokens/google', credentials).then((result) => {
         return {
-          token: data.data.attributes.token,
-          tokenId: data.data.id,
-          userId: data.data.relationships.user.data.id
-        }
+          token: result.data.attributes.token,
+          tokenId: result.data.id,
+          userId: result.data.relationships.user.data.id,
+        };
       });
     });
   },

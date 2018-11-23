@@ -252,62 +252,69 @@ export default DS.Model.extend({
         return this.cells[fromRow].every((cell, idx) => {
           if (idx > fromColumn && idx < toColumn) {
             return this.validPathCell(fromRow, idx, 'right');
-          } else if (idx === toColumn) {
+          }
+          if (idx === toColumn) {
             return this.validTargetCell(fromRow, idx, 'right');
-          } else if (idx === fromColumn) {
+          }
+          if (idx === fromColumn) {
             // Start cell can't have a right wall.
             return (this.cells[fromRow][fromColumn] & 2) === 0;
           }
 
           return true;
         });
-      } else {
-        // To the left.
-        return this.cells[fromRow].every((cell, idx) => {
-          if (idx < fromColumn && idx > toColumn) {
-            return this.validPathCell(fromRow, idx, 'left');
-          } else if (idx === toColumn) {
-            return this.validTargetCell(fromRow, idx, 'left');
-          } else if (idx === fromColumn) {
-            // Start cell can't have a left wall.
-            return (this.cells[fromRow][fromColumn] & 8) === 0;
-          }
-
-          return true;
-        });
       }
-    } else {
-      // We're moving vertically.
-      if (fromRow < toRow) {
-        // Down.
-        return this.columnCells[fromColumn].every((cell, idx) => {
-          if (idx < fromRow && idx > toRow) {
-            return this.validPathCell(idx, fromColumn, 'down');
-          } else if (idx === toRow) {
-            return this.validTargetCell(idx, fromColumn, 'down');
-          } else if (idx === fromRow) {
-            // Start cell can't have a bottom wall.
-            return (this.cells[fromRow][fromColumn] & 4) === 0;
-          }
 
-          return true;
-        });
-      } else {
-        // Up.
-        return this.columnCells[fromColumn].every((cell, idx) => {
-          if (idx > fromRow && idx < toRow) {
-            return this.validPathCell(idx, fromColumn, 'up');
-          } else if (idx === toRow) {
-            return this.validTargetCell(idx, fromColumn, 'up');
-          } else if (idx === fromRow) {
-            // Start cell can't have a top wall.
-            return (this.cells[fromRow][fromColumn] & 1) === 0;
-          }
+      // To the left.
+      return this.cells[fromRow].every((cell, idx) => {
+        if (idx < fromColumn && idx > toColumn) {
+          return this.validPathCell(fromRow, idx, 'left');
+        }
+        if (idx === toColumn) {
+          return this.validTargetCell(fromRow, idx, 'left');
+        }
+        if (idx === fromColumn) {
+          // Start cell can't have a left wall.
+          return (this.cells[fromRow][fromColumn] & 8) === 0;
+        }
 
-          return true;
-        });
-      }
+        return true;
+      });
     }
+
+    // We're moving vertically.
+    if (fromRow < toRow) {
+      // Down.
+      return this.columnCells[fromColumn].every((cell, idx) => {
+        if (idx < fromRow && idx > toRow) {
+          return this.validPathCell(idx, fromColumn, 'down');
+        }
+        if (idx === toRow) {
+          return this.validTargetCell(idx, fromColumn, 'down');
+        }
+        if (idx === fromRow) {
+          // Start cell can't have a bottom wall.
+          return (this.cells[fromRow][fromColumn] & 4) === 0;
+        }
+
+        return true;
+      });
+    }
+    // Up.
+    return this.columnCells[fromColumn].every((cell, idx) => {
+      if (idx > fromRow && idx < toRow) {
+        return this.validPathCell(idx, fromColumn, 'up');
+      }
+      if (idx === toRow) {
+        return this.validTargetCell(idx, fromColumn, 'up');
+      }
+      if (idx === fromRow) {
+        // Start cell can't have a top wall.
+        return (this.cells[fromRow][fromColumn] & 1) === 0;
+      }
+
+      return true;
+    });
   },
 
   /**

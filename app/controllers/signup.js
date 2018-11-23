@@ -8,9 +8,9 @@ export default Controller.extend({
     signup(user) {
       user.save().then(() => {
         this.session.authenticate('authenticator:basic', user.email, user.password).then(() => {
-          this.transitionToRoute('index')
+          this.transitionToRoute('index');
         });
       });
-    }
+    },
   },
 });

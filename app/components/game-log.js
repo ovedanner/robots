@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import ActionCableSupport from '../mixins/action-cable-support';
 import { next } from '@ember/runloop';
+import ActionCableSupport from '../mixins/action-cable-support';
 
 /**
  * Log component for all game related events. This includes
@@ -21,16 +21,16 @@ export default Component.extend(ActionCableSupport, {
      * @param message
      */
     sendMessage(message) {
-      this.performAction('speak', { message: message });
+      this.performAction('speak', { message });
       this.set('newMessage', '');
-    }
+    },
   },
 
   /**
    * Initialize events array and setup socket stuff.
    */
-  didInsertElement() {
-    this._super(...arguments);
+  didInsertElement(...args) {
+    this._super(args);
 
     this.set('events', []);
 
@@ -43,8 +43,8 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Make sure to properly clean up socket stuff.
    */
-  willDestroyElement() {
-    this._super(...arguments);
+  willDestroyElement(...args) {
+    this._super(args);
 
     this.teardownSocket();
   },
@@ -54,7 +54,7 @@ export default Component.extend(ActionCableSupport, {
    */
   socketOpen() {
     this.subscribeToChannel('ChatChannel', {
-      room: this.room.id
+      room: this.room.id,
     });
   },
 
@@ -80,5 +80,5 @@ export default Component.extend(ActionCableSupport, {
       const el = document.getElementById('game-log-container');
       el.scrollTop = el.scrollHeight - el.clientHeight;
     });
-  }
+  },
 });

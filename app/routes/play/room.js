@@ -19,5 +19,5 @@ export default Route.extend({
 
   afterModel(model) {
     return this.ajax.post(`/rooms/${model.id}/join`);
-  }
+  },
 });

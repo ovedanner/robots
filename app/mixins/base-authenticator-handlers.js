@@ -16,7 +16,7 @@ export default Mixin.create({
   },
 
   restore(data) {
-    return new Promise(function(resolve) {
+    return new Promise((resolve) => {
       resolve(data);
     });
   },

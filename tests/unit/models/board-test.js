@@ -1,7 +1,7 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 
-module('Unit | Model | board', function(hooks) {
+module('Unit | Model | board', (hooks) => {
   setupTest(hooks);
 
   /**
@@ -9,20 +9,20 @@ module('Unit | Model | board', function(hooks) {
    */
   test('has proper basic properties', function(assert) {
     const cells = [
-        [1, 4, 9],
-        [15, 1, 1],
-        [8, 12, 2],
-      ],
-      goals = [
-        {
-          color: 'red',
-          number: 2,
-        }
-      ],
-      board = this.owner.lookup('service:store').createRecord('board', {
-        cells: cells,
-        goals: goals,
-      });
+      [1, 4, 9],
+      [15, 1, 1],
+      [8, 12, 2],
+    ];
+    const goals = [
+      {
+        color: 'red',
+        number: 2,
+      },
+    ];
+    const board = this.owner.lookup('service:store').createRecord('board', {
+      cells,
+      goals,
+    });
 
     assert.ok(board);
     assert.equal(board.nrRows, 3, 'Board has proper row numbers');
@@ -34,25 +34,25 @@ module('Unit | Model | board', function(hooks) {
    */
   test('has proper transposed cells', function(assert) {
     const cells = [
-        [1, 4, 12, 3],
-        [12, 7, 1, 3],
-        [2, 2, 2, 4],
-        [10, 1, 1, 6],
-      ],
-      goals = [
-        {
-          color: 'red',
-          number: 2,
-        },
-        {
-          color: 'blue',
-          number: 7,
-        }
-      ],
-      board = this.owner.lookup('service:store').createRecord('board', {
-        cells: cells,
-        goals: goals,
-      });
+      [1, 4, 12, 3],
+      [12, 7, 1, 3],
+      [2, 2, 2, 4],
+      [10, 1, 1, 6],
+    ];
+    const goals = [
+      {
+        color: 'red',
+        number: 2,
+      },
+      {
+        color: 'blue',
+        number: 7,
+      },
+    ];
+    const board = this.owner.lookup('service:store').createRecord('board', {
+      cells,
+      goals,
+    });
 
     assert.deepEqual(board.columnCells, [
       [1, 12, 2, 10],
@@ -66,28 +66,28 @@ module('Unit | Model | board', function(hooks) {
     assert.expect(8);
 
     const board = this.owner.lookup('service:store').createRecord('board', {
-        cells: [
-          [1, 4, 12, 3],
-          [12, 7, 1, 3],
-          [2, 2, 2, 4],
-          [10, 1, 1, 6],
-        ],
-        goals: [
-          {
-            color: 'red',
-            number: 2,
-          },
-          {
-            color: 'blue',
-            number: 7,
-          }
-        ],
-        robotColors: ['red', 'blue'],
-      });
+      cells: [
+        [1, 4, 12, 3],
+        [12, 7, 1, 3],
+        [2, 2, 2, 4],
+        [10, 1, 1, 6],
+      ],
+      goals: [
+        {
+          color: 'red',
+          number: 2,
+        },
+        {
+          color: 'blue',
+          number: 7,
+        },
+      ],
+      robotColors: ['red', 'blue'],
+    });
 
     board.initializeRobots();
 
-    let remainingColors = ['red', 'blue'];
+    const remainingColors = ['red', 'blue'];
 
     assert.equal(board.robots.length, 2, 'All robots are added to the board state.');
 
@@ -108,30 +108,30 @@ module('Unit | Model | board', function(hooks) {
     assert.expect(4);
 
     const goals = [
-        {
-          color: 'red',
-          number: 2,
-        },
-        {
-          color: 'blue',
-          number: 7,
-        }
+      {
+        color: 'red',
+        number: 2,
+      },
+      {
+        color: 'blue',
+        number: 7,
+      },
+    ];
+    const board = this.owner.lookup('service:store').createRecord('board', {
+      cells: [
+        [1, 4, 12, 3],
+        [12, 7, 1, 3],
+        [2, 2, 2, 4],
+        [10, 1, 1, 6],
       ],
-      board = this.owner.lookup('service:store').createRecord('board', {
-        cells: [
-          [1, 4, 12, 3],
-          [12, 7, 1, 3],
-          [2, 2, 2, 4],
-          [10, 1, 1, 6],
-        ],
-        goals: goals,
-        robotColors: ['red', 'blue'],
-      });
+      goals,
+      robotColors: ['red', 'blue'],
+    });
 
     board.initializeRobots();
     board.setCurrentGoal(goals[1]);
 
-    const robots = board.robots;
+    const { robots } = board;
 
     assert.deepEqual(board.currentGoal, goals[1], 'Board state has proper current goal.');
     assert.deepEqual(board.moves, [], 'Board state does not contain any moves.');
@@ -143,32 +143,32 @@ module('Unit | Model | board', function(hooks) {
     assert.expect(3);
 
     const goals = [
-        {
-          color: 'red',
-          number: 2,
-        },
-        {
-          color: 'blue',
-          number: 7,
-        }
+      {
+        color: 'red',
+        number: 2,
+      },
+      {
+        color: 'blue',
+        number: 7,
+      },
+    ];
+    const board = this.owner.lookup('service:store').createRecord('board', {
+      cells: [
+        [1, 4, 12, 3],
+        [12, 7, 1, 3],
+        [2, 2, 2, 4],
+        [10, 1, 1, 6],
       ],
-      board = this.owner.lookup('service:store').createRecord('board', {
-        cells: [
-          [1, 4, 12, 3],
-          [12, 7, 1, 3],
-          [2, 2, 2, 4],
-          [10, 1, 1, 6],
-        ],
-        goals: goals,
-        robotColors: ['red', 'blue'],
-      });
+      goals,
+      robotColors: ['red', 'blue'],
+    });
 
     board.initializeRobots();
     board.setCurrentGoal(goals[0]);
 
-    const robotOne = board.robots[0],
-      robotStartRow = robotOne.position.row,
-      robotStartColumn = robotOne.position.column;
+    const robotOne = board.robots[0];
+    const robotStartRow = robotOne.position.row;
+    const robotStartColumn = robotOne.position.column;
 
     board.click(robotStartRow, robotStartColumn);
 
@@ -181,20 +181,20 @@ module('Unit | Model | board', function(hooks) {
     assert.expect(6);
 
     const board = this.owner.lookup('service:store').createRecord('board', {
-        cells: [
-          [9, 1, 1, 3],
-          [8, 0, 0, 2],
-          [8, 0, 0, 2],
-          [12, 4, 4, 6],
-        ],
-        goals: [
-          {
-            color: 'red',
-            number: 2,
-          },
-        ],
-        robotColors: ['red'],
-      });
+      cells: [
+        [9, 1, 1, 3],
+        [8, 0, 0, 2],
+        [8, 0, 0, 2],
+        [12, 4, 4, 6],
+      ],
+      goals: [
+        {
+          color: 'red',
+          number: 2,
+        },
+      ],
+      robotColors: ['red'],
+    });
 
     board.initializeRobots();
     board.setCurrentGoal({
