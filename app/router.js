@@ -13,9 +13,6 @@ Router.map(function() {
     this.route('room', { path: ':id' });
     this.route('alone');
   });
-  this.route('login');
-  this.route('signup');
-
   this.route('rooms', function() {
     this.route('add');
   });

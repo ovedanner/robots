@@ -115,6 +115,16 @@ export default Component.extend(ActionCableSupport, {
         });
       }
     },
+
+    /**
+     * Make sure the game controls and log have the appropriate height.
+     * @param width
+     * @param height
+     */
+    boardSizeCalculated(width, height) {
+      document.getElementById('game-controls').style.height = `${height}px`;
+      document.getElementById('game-log').style.height = `${height}px`;
+    },
   },
 
   /**

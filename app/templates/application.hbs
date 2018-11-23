@@ -3,5 +3,8 @@
 {{/each}}
 
 <div id="content-wrapper" class="container d-flex justify-content-center">
+  {{#if session.isAuthenticated}}
+    <div {{action "logout"}} class="logout"><span>Logout</span></div>
+  {{/if}}
   {{outlet}}
 </div>

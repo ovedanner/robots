@@ -1,9 +1,6 @@
 <div class="start">
   <div class="d-flex justify-content-center mb-2">
     <h1>Robots</h1>
-    {{#unless session.isAuthenticated}}
-      {{#link-to "signup"}}sign up{{/link-to}}
-    {{/unless}}
   </div>
   <div class="d-flex justify-content-center p-4 gray-borders">
     <div class="d-flex flex-column align-items-center">
@@ -18,9 +15,6 @@
           {{#bs-button type="primary" onClick=(action "logout")}}Logout{{/bs-button}}
         </div>
       {{else}}
-        <div class="p-2">
-          {{#link-to "login" classNames="btn btn-primary"}}Login{{/link-to}}
-        </div>
         <div class="p-2">
           {{#bs-button type="primary" onClick=(action "loginWithGoogle")}}Login via Google{{/bs-button}}
         </div>

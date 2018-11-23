@@ -86,9 +86,16 @@ const BoardCanvas = Component.extend({
    */
   initialize() {
     const canvas = document.querySelector('canvas');
+    const width = this.cellSize * this.board.cells.length;
+    const height = this.cellSize * this.board.cells[0].length;
 
-    canvas.width = this.cellSize * this.board.cells.length;
-    canvas.height = this.cellSize * this.board.cells[0].length;
+    // Is there a closure action for notifying about the board size?
+    if (this.boardSizeCalculated) {
+      this.boardSizeCalculated(width, height);
+    }
+
+    canvas.width = width;
+    canvas.height = height;
 
     this.set('context', canvas.getContext('2d'));
 
