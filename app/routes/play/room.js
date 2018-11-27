@@ -18,6 +18,11 @@ export default Route.extend({
   },
 
   afterModel(model) {
-    return this.ajax.post(`/rooms/${model.id}/join`);
+    return this.ajax.post(`/rooms/${model.id}/join`).catch((error) => {
+      if (isNotFoundError(error)) {
+        this.flashMessages.danger('Could not find the room you were looking for.');
+        this.transitionTo('rooms');
+      }
+    });
   },
 });

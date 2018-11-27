@@ -1,7 +1,7 @@
-<div id="game-log-header" class="d-flex flex-row flex-shrink-0 justify-content-center p-2 gray-border-bottom">
+<div id="game-log-header" class="d-flex flex-shrink-0 justify-content-center p-2 gray-border-bottom">
   <h3>Chat</h3>
 </div>
-<div id="game-log-container" class="d-flex flex-row flex-grow-1">
+<div id="game-log-container" class="d-flex flex-grow-1">
   <div id="game-log-container-inner" class="d-flex flex-column flex-grow-1">
     <ul class="p-4">
       {{#each gameLog.events as |event|}}
@@ -12,7 +12,7 @@
     </ul>
   </div>
 </div>
-<div class="d-flex flex-row new-message-container align-self-end flex-shrink-0 gray-border-top">
+<div class="d-flex new-message-container align-self-end flex-shrink-0 gray-border-top">
   <div class="flex-grow-1 m-2">
     {{input
       value=newMessage

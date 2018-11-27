@@ -235,7 +235,7 @@ const BoardCanvas = Component.extend({
 
       context.beginPath();
       context.arc(x, y, radius, 0, 2 * Math.PI, false);
-      context.fillStyle = robot.color;
+      context.fillStyle = robot.robot;
       context.fill();
     });
 
@@ -253,7 +253,7 @@ const BoardCanvas = Component.extend({
     // this whilst iterating over the moves to keep track
     // of the next position to draw from.
     start.forEach((robot) => {
-      positions[robot.color] = {
+      positions[robot.robot] = {
         row: robot.position.row,
         column: robot.position.column,
       };
@@ -305,7 +305,7 @@ const BoardCanvas = Component.extend({
     context.save();
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI, false);
-    context.fillStyle = robot.color;
+    context.fillStyle = robot.robot;
     context.fill();
     context.restore();
 

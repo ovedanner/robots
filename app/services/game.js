@@ -107,19 +107,5 @@ export default Service.extend({
     board.set('finished', true);
   },
 
-  /**
-   * Retrieves the next goal to solve for a given board.
-   */
-  getNextGoal(board) {
-    const boardProperties = this.getProperties(board);
-    const { goals } = board;
-    const completed = Object.keys(boardProperties.completedGoals);
 
-    const possibleGoals = goals.filter((goal) => {
-      return !completed.includes(board.getGoalId(goal));
-    });
-    const index = Math.floor(Math.random() * possibleGoals.length);
-
-    return (possibleGoals.length > 0 ? possibleGoals[index] : null);
-  },
 });

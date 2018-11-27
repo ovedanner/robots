@@ -1,47 +1,22 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
 
 /**
  * Route for playing a game.
  */
 export default Route.extend({
   /**
-   * Game service.
-   */
-  gameService: service('game'),
-
-  /**
    * Fetch a board to play.
    */
   model() {
-    return this.store.createRecord('board', {
-      cells: [
-        [9, 1, 1, 1, 3],
-        [8, 0, 0, 0, 2],
-        [8, 0, 0, 0, 2],
-        [8, 0, 0, 0, 2],
-        [12, 4, 4, 4, 6],
-      ],
-      goals: [
-        {
-          color: 'red',
-          number: 24,
-        },
-        {
-          color: 'blue',
-          number: 2,
-        },
-      ],
-      robotColors: ['red', 'blue', 'green'],
+    // Because getting a random board does not actually save a record
+    // in the database, we can't use `queryRecord` or `findRecord`.
+    return this.ajax.request('boards/random').then((resp) => {
+      const attrs = resp.data.attributes;
+      return this.store.createRecord('board', {
+        cells: attrs.cells,
+        goals: attrs.goals,
+        robotColors: attrs['robot-colors'],
+      });
     });
-  },
-
-  /**
-   * Register the board.
-   * @param model
-   */
-  afterModel(model) {
-    this.gameService.registerBoard(model);
-    this.gameService.startNewGame(model);
   },
 });

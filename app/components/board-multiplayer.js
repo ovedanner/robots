@@ -157,38 +157,6 @@ export default Component.extend(ActionCableSupport, {
 
     if (data.message && data.message.action) {
       this[data.message.action.camelize()].call(this, data.message);
-      // switch (data.message.action) {
-      //   // Starts a new game.
-      //   case 'start':
-      //     this.startNewGame(data.message);
-      //     break;
-      //   // Somebody has a new best solution!
-      //   case 'has_solution_in':
-      //     this.hasSolutionIn(data.message);
-      //     break;
-      //
-      //   // Nobody can provide solutions anymore.
-      //   case 'closed_for_solutions':
-      //     this.closedForSolutions(data.message);
-      //     break;
-      //
-      //   // The best so far can't provide his moves anymore.
-      //   case 'closed_for_moves':
-      //     this.closedForMoves(data.message);
-      //     break;
-      //
-      //   case 'goal_won_by':
-      //     this.goalWonBy(data.message);
-      //     break;
-      //
-      //   case 'new_goal':
-      //     this.newGoal(data.message);
-      //     break;
-      //
-      //   case 'game_finished':
-      //     this.gameFinished();
-      //     break;
-      // }
     }
   },
 

@@ -5,6 +5,8 @@ export default Component.extend({
 
   board: null,
 
+  completedGoals: null,
+
   actions: {
     /**
      * Start a new game.
@@ -30,11 +32,38 @@ export default Component.extend({
 
       // If the current goal has been reached
       if (reachedCurrentGoal) {
+        const goal = this.board.currentGoal;
+        const nextGoal = this.getNextGoal();
+
+        if (nextGoal) {
+          this.completedGoals.pushObject(this.board.getGoalId(goal));
+          this.board.setCurrentGoal(nextGoal);
+        }
       }
     },
 
     boardSizeCalculated(width, height) {
       document.getElementById('game-controls').style.height = `${height}px`;
     },
+  },
+
+  didInsertElement(...args) {
+    this._super(args);
+    this.set('completedGoals', []);
+    this.board.initializeRobots();
+    this.board.setCurrentGoal(this.getNextGoal());
+  },
+
+  /**
+   * Retrieves the next goal to solve for the board.
+   */
+  getNextGoal() {
+    const { board } = this;
+    const possibleGoals = board.goals.filter((goal) => {
+      return !this.completedGoals.includes(board.getGoalId(goal));
+    });
+    const index = Math.floor(Math.random() * possibleGoals.length);
+
+    return (possibleGoals.length > 0 ? possibleGoals[index] : null);
   },
 });

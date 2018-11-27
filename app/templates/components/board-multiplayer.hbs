@@ -1,4 +1,4 @@
-<div id="game-controls" class="d-flex flex-column gray-borders mr-2 p-2">
+{{#game-controls}}
   {{#if userOwnsRoom}}
     {{bs-button defaultText="Start new game" type="primary" onClick=(action "startNewGame") classNames="mb-2"}}
   {{/if}}
@@ -38,7 +38,7 @@
       <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
     {{/if}}
   {{/if}}
-</div>
+{{/game-controls}}
 {{#if board}}
   {{board-canvas
     board

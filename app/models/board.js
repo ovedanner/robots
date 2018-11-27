@@ -116,7 +116,7 @@ export default DS.Model.extend({
 
       // Convert the index to row and column indices.
       robots.pushObject({
-        color,
+        robot: color,
         position: {
           row: position.row,
           column: position.column,
@@ -149,7 +149,7 @@ export default DS.Model.extend({
    */
   resetRobotsToStart() {
     this.start.forEach((startPos) => {
-      const robot = this.robots.findBy('color', startPos.color);
+      const robot = this.robots.findBy('robot', startPos.robot);
 
       robot.position = JSON.parse(JSON.stringify(startPos.position));
     });
@@ -210,7 +210,7 @@ export default DS.Model.extend({
   moveRobotToCell(robot, row, column) {
     // Record the move.
     this.moves.pushObject({
-      robot: robot.color,
+      robot: robot.robot,
       to: {
         row,
         column,
@@ -224,7 +224,7 @@ export default DS.Model.extend({
     };
 
     // Check if the goal was reached by the appropriate robot.
-    if (this.currentGoal && this.currentGoal.color === robot.color) {
+    if (this.currentGoal && this.currentGoal.color === robot.robot) {
       const [goalRowIdx, goalColumnIdx] = this.getGoalIndices(this.currentGoal);
 
       if (row === goalRowIdx && column === goalColumnIdx) {
@@ -401,7 +401,7 @@ export default DS.Model.extend({
    * @returns {boolean}
    */
   isRobotSelected(robot) {
-    return !!this.selectedRobot && this.selectedRobot.color === robot.color;
+    return !!this.selectedRobot && this.selectedRobot.robot === robot.robot;
   },
 
   /**

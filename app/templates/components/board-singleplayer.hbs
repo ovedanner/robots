@@ -1,12 +1,12 @@
-<div id="game-controls" class="d-flex flex-column gray-borders mr-2 p-2">
-  {{#if (gt board.moves.length 0)}}
-    {{bs-button
-      defaultText="Reset"
-      type="primary"
-      onClick=(action "resetMoves")
-      classNames="mb-2"}}
-  {{/if}}
-</div>
+{{#game-controls}}
+  {{bs-button
+    defaultText="Reset"
+    type="primary"
+    disabled=(lt board.moves.length 1)
+    onClick=(action "resetMoves")
+    classNames="mb-2"}}
+  <p>Current number of moves: {{board.moves.length}}</p>
+{{/game-controls}}
 {{board-canvas
   board
   onClick=(action "clickedBoard")
