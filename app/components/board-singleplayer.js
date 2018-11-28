@@ -47,8 +47,13 @@ export default Component.extend({
     },
   },
 
+  /**
+   * Start the game as soon as the element is rendered.
+   * @param args
+   */
   didInsertElement(...args) {
     this._super(args);
+
     this.set('completedGoals', []);
     this.board.initializeRobots();
     this.board.setCurrentGoal(this.getNextGoal());
