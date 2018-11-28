@@ -2,6 +2,9 @@
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
+const env = EmberApp.env();
+const isProductionLikeBuild = ['production'].indexOf(env) > -1;
+
 module.exports = function(defaults) {
   const app = new EmberApp(defaults, {
     'ember-bootstrap': {
@@ -9,6 +12,15 @@ module.exports = function(defaults) {
       importBootstrapFont: false,
       importBootstrapCSS: false,
     },
+    fingerprint: {
+      enabled: isProductionLikeBuild,
+      prepend: 'https://s3-eu-west-1.amazonaws.com/themaclipper-robots-static/',
+    },
+    sourcemaps: {
+      enabled: !isProductionLikeBuild,
+    },
+    minifyCSS: { enabled: isProductionLikeBuild },
+    minifyJS: { enabled: isProductionLikeBuild },
   });
 
   // Use `app.import` to add additional libraries to the generated

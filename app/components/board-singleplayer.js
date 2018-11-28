@@ -1,5 +1,8 @@
 import Component from '@ember/component';
 
+/**
+ * Singleplayer board component.
+ */
 export default Component.extend({
   classNames: ['d-flex'],
 
