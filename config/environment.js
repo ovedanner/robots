@@ -22,7 +22,7 @@ module.exports = function(environment) {
       // when it is created
     },
     contentSecurityPolicy: {
-      'connect-src': "'self' http://localhost:3000",
+      'connect-src': "'self' http://localhost",
     },
     torii: {
       sessionServiceName: 'session',
@@ -41,8 +41,8 @@ module.exports = function(environment) {
     ENV.APP.LOG_TRANSITIONS = true;
     ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
-    ENV.backendHost = 'http://localhost:3000';
-    ENV.websocketHost = 'ws://localhost:3000/cable';
+    ENV.backendHost = 'http://localhost';
+    ENV.websocketHost = 'ws://localhost/cable';
   }
 
   if (environment === 'test') {
