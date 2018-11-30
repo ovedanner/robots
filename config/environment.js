@@ -22,7 +22,7 @@ module.exports = function(environment) {
       // when it is created
     },
     contentSecurityPolicy: {
-      'connect-src': "'self' http://localhost",
+      'connect-src': "'self' https://robots.themaclipper.nl",
     },
     torii: {
       sessionServiceName: 'session',
@@ -59,6 +59,9 @@ module.exports = function(environment) {
 
   if (environment === 'production') {
     // here you can enable a production-specific feature
+    ENV.backendHost = 'https://robots.themaclipper.nl';
+    ENV.websocketHost = 'ws://robots.themaclipper.nl/cable';
+    ENV.torii.providers['google-oauth2'].redirectUri = 'https://robots.themaclipper.nl/torii/redirect.html';
   }
 
   return ENV;

@@ -26,7 +26,7 @@ module.exports = function(deployTarget) {
     // only care about deploying index.html into redis in dev
     ENV.pipeline = {
       disabled: {
-        allExcept: ['redis'],
+        allExcept: ['build', 'redis'],
       },
     };
   }
@@ -34,7 +34,7 @@ module.exports = function(deployTarget) {
   if (deployTarget === 'prod') {
     ENV['ssh-tunnel'] = {
       username: 'ubuntu',
-      host: '52.211.53.111',
+      host: '63.33.51.163',
       dstHost: 'redis-robots-001.14z5xl.0001.euw1.cache.amazonaws.com',
     };
     ENV.build.environment = 'production';
