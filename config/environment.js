@@ -22,7 +22,7 @@ module.exports = function(environment) {
       // when it is created
     },
     contentSecurityPolicy: {
-      'connect-src': "'self' https://robots.themaclipper.nl",
+      'connect-src': "'self' https://robots.themaclipper.nl http://localhost:3000",
     },
     torii: {
       sessionServiceName: 'session',
@@ -41,8 +41,8 @@ module.exports = function(environment) {
     ENV.APP.LOG_TRANSITIONS = true;
     ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
-    ENV.backendHost = 'http://localhost';
-    ENV.websocketHost = 'ws://localhost/cable';
+    ENV.backendHost = 'http://localhost:3000';
+    ENV.websocketHost = 'ws://localhost:3000/cable';
   }
 
   if (environment === 'test') {
@@ -58,7 +58,6 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    // here you can enable a production-specific feature
     ENV.backendHost = 'https://robots.themaclipper.nl';
     ENV.websocketHost = 'ws://robots.themaclipper.nl/cable';
     ENV.torii.providers['google-oauth2'].redirectUri = 'https://robots.themaclipper.nl/torii/redirect.html';

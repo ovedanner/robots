@@ -15,7 +15,7 @@ export default Route.extend({
       return this.store.createRecord('board', {
         cells: attrs.cells,
         goals: attrs.goals,
-        robotColors: attrs['robot-colors'],
+        robotColors: attrs.robot_colors,
       });
     });
   },
