@@ -1,4 +1,7 @@
-{{room.name}}
+{{#if userOwnsRoom}}
+  {{fa-icon "times" size=2 class="delete align-self-center mr-2" click=(action deleteRoom)}}
+{{/if}}
+<div class="d-flex flex-grow-1"><div class="align-self-center">{{room.name}}</div></div>
 {{#if userCanJoinRoom}}
   {{#bs-button type="primary" onClick=join}}Join{{/bs-button}}
 {{/if}}

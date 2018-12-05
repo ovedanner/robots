@@ -1,9 +1,19 @@
 import Controller from '@ember/controller';
+import { inject as service } from '@ember/service';
 
 export default Controller.extend({
+  flashMessages: service(),
+
   actions: {
     saveRoom(room) {
       room.save();
+    },
+
+    deleteRoom(room) {
+      room.deleteRecord();
+      room.save().then(() => {
+        this.flashMessages.success('Successfully deleted room.');
+      });
     },
 
     /**

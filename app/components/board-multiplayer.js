@@ -92,7 +92,7 @@ export default Component.extend(ActionCableSupport, {
      * @param nrMoves
      */
     sendNumberOfMoves(nrMoves) {
-      this.performAction('has_solution_in', {
+      this.performAction('solution_in', {
         nr_moves: nrMoves,
       });
 
@@ -190,7 +190,7 @@ export default Component.extend(ActionCableSupport, {
    * a certain number of steps.
    * @param messageData
    */
-  hasSolutionIn(messageData) {
+  solutionIn(messageData) {
     this.solutionTimerTask.perform();
 
     const bestSoFar = messageData.current_winner;

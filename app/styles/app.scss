@@ -1,4 +1,10 @@
 @import "ember-bootstrap/bootstrap";
+@import "font-awesome";
+
+// Remove some default bootstrap styles.
+.modal-header, .modal-footer {
+  border: none;
+}
 
 html, body, ul, p, h1, h2, h3 {
   font-family: 'Poppins', sans-serif;

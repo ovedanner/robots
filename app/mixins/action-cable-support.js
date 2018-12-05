@@ -14,6 +14,8 @@ export default Mixin.create({
   socketOptions: null,
   channelIdentifier: null,
 
+  messageHandler: null,
+
   /**
    * Socket setup.
    * @param options
@@ -22,8 +24,11 @@ export default Mixin.create({
     const socket = this.websockets.socketFor(`${ENV.websocketHost}?token=${this.session.token}`);
 
     // Register handlers.
+    if (options.message) {
+      this.set('messageHandler', options.message);
+    }
     socket.on('open', options.open || this.defaultOpen, this);
-    socket.on('message', options.message || this.defaultMessage, this);
+    socket.on('message', this.messageReceived, this);
     socket.on('close', options.close || this.defaultClose, this);
 
     this.setProperties({
@@ -72,7 +77,7 @@ export default Mixin.create({
 
     // Remove handlers.
     socket.off('open', this.socketOptions.open);
-    socket.off('message', this.socketOptions.message);
+    socket.off('message', this.messageReceived);
     socket.off('close', this.socketOptions.close);
   },
 
@@ -80,8 +85,12 @@ export default Mixin.create({
     return true;
   },
 
-  defaultMessage() {
-    return true;
+  messageReceived(event) {
+    const data = JSON.parse(event.data);
+
+    if (data.identifier === this.get('channelIdentifier') && this.messageHandler) {
+      this.messageHandler(event);
+    }
   },
 
   defaultClose() {

@@ -3,6 +3,10 @@
 
   #game-controls {
     width: 300px;
+
+    #game-controls-container {
+      background-color: $white;
+    }
   }
 
   #game-log {
@@ -13,6 +17,10 @@
 
     #game-log-container {
       overflow-y: auto;
+
+      #game-log-container-inner {
+        background-color: $white;
+      }
     }
 
     .new-message-container {

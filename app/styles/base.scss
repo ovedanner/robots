@@ -8,10 +8,16 @@ $colors: (
   "blue": $blue,
   "gray": #7d7b7a
 );
+$white: #f9f9f9;
 
 @each $colorName, $color in $colors {
   .#{$colorName}-borders {
     border: 4px solid #{$color};
+    @include border-radius($radius: 4px);
+  }
+
+  .#{$colorName}-borders-small {
+    border: 2px solid #{$color};
     @include border-radius($radius: 4px);
   }
 

@@ -12,6 +12,9 @@ module.exports = function(defaults) {
       importBootstrapFont: false,
       importBootstrapCSS: false,
     },
+    'ember-font-awesome': {
+      useScss: true,
+    },
     fingerprint: {
       enabled: isProductionLikeBuild,
       prepend: 'https://s3-eu-west-1.amazonaws.com/themaclipper-robots-static/',

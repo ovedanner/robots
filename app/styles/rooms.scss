@@ -1,4 +1,14 @@
 .rooms {
-  max-width: 500px;
+  max-width: 600px;
   margin-top: $marginTop;
+
+  .room {
+    height: 60px;
+    background-color: $white;
+
+    .delete {
+      cursor: pointer;
+      color: red;
+    }
+  }
 }
