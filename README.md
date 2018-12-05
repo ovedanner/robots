@@ -1,7 +1,7 @@
-# ricochet-robots
+# Robots
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+The frontend of an online singleplayer and multiplayer version of the popular 
+board game Ricochet Robots designed by Alex Randolph. 
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ You will need the following things properly installed on your computer.
 ## Installation
 
 * `git clone <repository-url>` this repository
-* `cd ricochet-robots`
+* `cd robots`
 * `npm install`
 
 ## Running / Development
@@ -45,7 +45,10 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Deploying
 
-Specify what it takes to deploy your app.
+Deployment is done using `ember-cli-deploy`, which is a deployment pipeline for Ember CLI applications. More specifically,
+deployment is done using the [Lightning Strategy](http://ember-cli-deploy.com/docs/v1.0.x/the-lightning-strategy/).
+To deploy, you need to specify some following environment variables in a `.env` file. Checkout `config/deploy.js` to
+see which variables need to be specified.
 
 ## Further Reading / Useful Links
 

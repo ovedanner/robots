@@ -28,7 +28,7 @@ module.exports = function(environment) {
       sessionServiceName: 'session',
       providers: {
         'google-oauth2': {
-          apiKey: '287879387971-vv9ukci4e72upoe7c7sbtojv6h9tp3ea.apps.googleusercontent.com',
+          apiKey: process.env.GOOGLE_API_KEY,
           redirectUri: 'http://localhost:4200/torii/redirect.html',
         },
       },
