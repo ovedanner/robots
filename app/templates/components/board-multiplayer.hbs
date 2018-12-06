@@ -1,10 +1,23 @@
 {{#game-controls}}
   {{#if userOwnsRoom}}
-    {{bs-button defaultText="Start new game" type="primary" onClick=(action "startNewGame") classNames="mb-2"}}
+    {{bs-button
+      defaultText="Start new game"
+      type="primary"
+      onClick=(action "startNewGame")
+      classNames="mb-2"}}
+
+    {{bs-button
+      defaultText="Next goal"
+      type="primary"
+      disabled=(not readyForNextGoal)
+      onClick=(action "getNextGoal") classNames="mb-2"}}
   {{/if}}
-  {{#if (and userOwnsRoom readyForNextGoal)}}
-    {{bs-button defaultText="Next goal" type="primary" onClick=(action "getNextGoal") classNames="mb-2"}}
-  {{/if}}
+  {{bs-button
+    defaultText="Preview winning moves"
+    type="primary"
+    disabled=(is-empty winningMoves)
+    onClick=(action "previewMoves" winningMoves)
+    classNames="mb-2"}}
   {{#if board}}
     <div class="d-flex mb-2">
       <div class="flex-grow-1 mr-2">
@@ -21,16 +34,15 @@
         defaultText="Send"
         type="primary"
         onClick=(action "sendNumberOfMoves" nrMoves)
-        disabled=cantProvideSolution
+        disabled=(or cantProvideSolution (is-empty nrMoves))
         classNames="ml-2"}}
     </div>
-    {{#if (gt board.moves.length 0)}}
-      {{bs-button
-        defaultText="Reset"
-        type="primary"
-        onClick=(action "resetMoves")
-        classNames="mb-2"}}
-    {{/if}}
+    {{bs-button
+      defaultText="Reset"
+      type="primary"
+      disabled=(lt board.moves.length 1)
+      onClick=(action "resetMoves")
+      classNames="mb-2"}}
     {{#if solutionTimerTask.isRunning}}
       <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
     {{/if}}

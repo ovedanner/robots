@@ -10,6 +10,7 @@ const colorMap = {
   red: '#F58C8F',
   yellow: '#FEF87D',
   green: '#C3E17E',
+  gray: '#757575',
 };
 
 /**
@@ -38,7 +39,7 @@ const BoardCanvas = Component.extend({
   /**
    * Color of the cell.
    */
-  cellColor: '#f9f9f9',
+  cellColor: '#F9F9F9',
 
   /**
    * Sizes.

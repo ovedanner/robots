@@ -3,6 +3,7 @@ import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
 import ActionCableSupport from '../mixins/action-cable-support';
+import { later } from '@ember/runloop';
 
 /**
  * Encompasses the multiplayer board.
@@ -33,6 +34,11 @@ export default Component.extend(ActionCableSupport, {
    * Is the game ready for the next goal?
    */
   readyForNextGoal: false,
+
+  /**
+   * Winning moves for the current goal.
+   */
+  winningMoves: null,
 
   /**
    * Does the user own the room? If so, he has more controls.
@@ -125,6 +131,10 @@ export default Component.extend(ActionCableSupport, {
       document.getElementById('game-controls').style.height = `${height}px`;
       document.getElementById('game-log').style.height = `${height}px`;
     },
+
+    previewMoves(moves) {
+      this.showMoves(moves);
+    }
   },
 
   /**
@@ -178,6 +188,7 @@ export default Component.extend(ActionCableSupport, {
       board,
       cantProvideSolution: false,
       canProvideMoves: false,
+      winningMoves: [],
     });
 
     this.gameLog.addEvent({
@@ -248,6 +259,7 @@ export default Component.extend(ActionCableSupport, {
       readyForNextGoal: false,
       cantProvideSolution: false,
       canProvideMoves: false,
+      winningMoves: [],
     });
 
     this.board.setCurrentGoal(messageData.goal);
@@ -262,6 +274,7 @@ export default Component.extend(ActionCableSupport, {
     this.setProperties({
       readyForNextGoal: true,
       canProvideMoves: false,
+      winningMoves: messageData.moves,
     });
 
     this.gameLog.addEvent({
@@ -278,5 +291,23 @@ export default Component.extend(ActionCableSupport, {
     this.gameLog.addEvent({
       message: 'The game is finished!',
     });
+  },
+
+  /**
+   * Shows the given moves on the board.
+   * @param moves
+   */
+  showMoves(moves) {
+    const { board } = this;
+
+    let moveIdx = 0;
+    const pushMove = () => {
+      board.moves.pushObject(moves[moveIdx++]);
+      if (moveIdx >= (moves.length - 1)) {
+        later(this, pushMove, 1000);
+      }
+    };
+    board.resetRobotsToStart();
+    later(this, pushMove, 1000);
   },
 });
