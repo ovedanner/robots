@@ -3,6 +3,7 @@
 
   #game-controls {
     width: 300px;
+    max-height: 800px;
 
     #game-controls-container {
       background-color: $white;
@@ -11,16 +12,14 @@
 
   #game-log {
     width: 300px;
+    max-height: 800px;
     ul {
       list-style-type: none;
     }
 
     #game-log-container {
       overflow-y: auto;
-
-      #game-log-container-inner {
-        background-color: $white;
-      }
+      background-color: $white;
     }
 
     .new-message-container {
