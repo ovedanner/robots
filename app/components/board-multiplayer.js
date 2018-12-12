@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
-import { later } from '@ember/runloop';
 import ActionCableSupport from '../mixins/action-cable-support';
 
 /**
