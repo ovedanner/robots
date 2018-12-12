@@ -2,8 +2,8 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
-import ActionCableSupport from '../mixins/action-cable-support';
 import { later } from '@ember/runloop';
+import ActionCableSupport from '../mixins/action-cable-support';
 
 /**
  * Encompasses the multiplayer board.
@@ -71,6 +71,22 @@ export default Component.extend(ActionCableSupport, {
     }
   }).drop(),
 
+  /**
+   * Previews the given moves (assuming they start from the current
+   * robot start positions).
+   */
+  previewMovesTask: task(function* (moves) {
+    this.board.resetRobotsToStart();
+    yield timeout(1000);
+
+    for (let i = 0; i < moves.length; i++) {
+      this.board.moves.pushObject(moves[i]);
+      yield timeout(1000);
+    }
+
+    this.board.resetRobotsToStart();
+  }).drop(),
+
   actions: {
     /**
      * Start a new game.
@@ -112,13 +128,17 @@ export default Component.extend(ActionCableSupport, {
      * @param column
      */
     clickedBoard(row, column) {
-      const reachedCurrentGoal = this.board.click(row, column);
+      // A user can only interact with the board if he or she can
+      // provide moves.
+      if (this.canProvideMoves) {
+        const reachedCurrentGoal = this.board.click(row, column);
 
-      // If the current goal has been reached
-      if (reachedCurrentGoal && this.canProvideMoves) {
-        this.performAction('solution_moves', {
-          moves: this.board.moves,
-        });
+        // If the current goal has been reached
+        if (reachedCurrentGoal && this.canProvideMoves) {
+          this.performAction('solution_moves', {
+            moves: this.board.moves,
+          });
+        }
       }
     },
 
@@ -134,7 +154,7 @@ export default Component.extend(ActionCableSupport, {
 
     previewMoves(moves) {
       this.showMoves(moves);
-    }
+    },
   },
 
   /**
@@ -298,16 +318,6 @@ export default Component.extend(ActionCableSupport, {
    * @param moves
    */
   showMoves(moves) {
-    const { board } = this;
-
-    let moveIdx = 0;
-    const pushMove = () => {
-      board.moves.pushObject(moves[moveIdx++]);
-      if (moveIdx >= (moves.length - 1)) {
-        later(this, pushMove, 1000);
-      }
-    };
-    board.resetRobotsToStart();
-    later(this, pushMove, 1000);
+    this.previewMovesTask.perform(moves);
   },
 });

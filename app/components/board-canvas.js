@@ -10,7 +10,7 @@ const colorMap = {
   red: '#F58C8F',
   yellow: '#FEF87D',
   green: '#C3E17E',
-  grey: '#757575',
+  grey: '#B6B6B6',
 };
 
 /**
@@ -44,7 +44,7 @@ const BoardCanvas = Component.extend({
   /**
    * Sizes.
    */
-  cellSize: 50,
+  cellSize: 45,
   boardWidth: computed('cellSize', 'board.nrRows', function() {
     return this.cellSize * this.board.nrRows;
   }),
@@ -87,6 +87,7 @@ const BoardCanvas = Component.extend({
    */
   initialize() {
     const canvas = document.querySelector('canvas');
+    const scale = window.devicePixelRatio || 1;
     const width = this.cellSize * this.board.cells.length;
     const height = this.cellSize * this.board.cells[0].length;
 
@@ -95,10 +96,14 @@ const BoardCanvas = Component.extend({
       this.boardSizeCalculated(width, height);
     }
 
-    canvas.width = width;
-    canvas.height = height;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
 
-    this.set('context', canvas.getContext('2d'));
+    const context = canvas.getContext('2d');
+    context.scale(scale, scale);
+    this.set('context', context);
 
     const { cells, nrRows, nrColumns } = this.board;
     const cellCoordinates = [];

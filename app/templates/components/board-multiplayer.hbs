@@ -18,6 +18,12 @@
     disabled=(is-empty winningMoves)
     onClick=(action "previewMoves" winningMoves)
     classNames="mb-2"}}
+  {{bs-button
+    defaultText="Reset robots"
+    type="primary"
+    disabled=(lt board.moves.length 1)
+    onClick=(action "resetMoves")
+    classNames="mb-2"}}
   {{#if board}}
     <div class="d-flex mb-2">
       <div class="flex-grow-1 mr-2">
@@ -37,12 +43,6 @@
         disabled=(or cantProvideSolution (is-empty nrMoves))
         classNames="ml-2"}}
     </div>
-    {{bs-button
-      defaultText="Reset"
-      type="primary"
-      disabled=(lt board.moves.length 1)
-      onClick=(action "resetMoves")
-      classNames="mb-2"}}
     {{#if solutionTimerTask.isRunning}}
       <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
     {{/if}}
@@ -58,6 +58,6 @@
     boardSizeCalculated=(action "boardSizeCalculated")}}
 {{else}}
 {{! Placeholder board }}
-  <div style="width:800px;height:800px" class="gray-borders"></div>
+  <div style="width:720px;height:720px" class="gray-borders"></div>
 {{/if}}
 {{game-log room=room user=user}}
