@@ -296,6 +296,8 @@ export default Component.extend(ActionCableSupport, {
       winningMoves: messageData.moves,
     });
 
+    this.board.setRobotPositions(messageData.robot_positions);
+
     this.gameLog.addEvent({
       message: `The round is won by ${messageData.winner}!`,
     });

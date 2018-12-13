@@ -21,7 +21,7 @@
   {{bs-button
     defaultText="Reset robots"
     type="primary"
-    disabled=(lt board.moves.length 1)
+    disabled=(or (not board) (lt board.moves.length 1))
     onClick=(action "resetMoves")
     classNames="mb-2"}}
   {{#if board}}
