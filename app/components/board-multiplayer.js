@@ -49,10 +49,10 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Timer for the amount of time left to come up with a solution.
    */
-  solutionTimerTask: task(function* () {
-    this.set('solutionTimer', 10);
+  solutionTimerTask: task(function* (seconds) {
+    this.set('solutionTimer', seconds);
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < seconds; i++) {
       yield timeout(1000);
       this.decrementProperty('solutionTimer');
     }
@@ -75,11 +75,19 @@ export default Component.extend(ActionCableSupport, {
    * robot start positions).
    */
   previewMovesTask: task(function* (moves) {
+    this.board.set('selectedRobot', null);
     this.board.resetRobotsToStart();
+
     yield timeout(1000);
 
     for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      const robot = this.board.robots.find((r) => {
+        return r.robot === move.robot;
+      });
+      robot.position = move.to;
       this.board.moves.pushObject(moves[i]);
+
       yield timeout(1000);
     }
 
@@ -221,7 +229,8 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   solutionIn(messageData) {
-    this.solutionTimerTask.perform();
+    const secondsLeft = messageData.seconds_left;
+    this.solutionTimerTask.perform(secondsLeft);
 
     const bestSoFar = messageData.current_winner;
     const nrMoves = messageData.current_nr_moves;
@@ -238,8 +247,9 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   closedForSolutions(messageData) {
+    const secondsLeft = messageData.seconds_left;
     this.solutionTimerTask.cancelAll();
-    this.movesTimerTask.perform();
+    this.movesTimerTask.perform(secondsLeft);
 
     const bestSoFar = messageData.current_winner;
     const bestSoFarId = messageData.current_winner_id;
@@ -281,6 +291,7 @@ export default Component.extend(ActionCableSupport, {
       winningMoves: [],
     });
 
+    this.board.setRobotPositions(messageData.robot_positions);
     this.board.setCurrentGoal(messageData.goal);
   },
 
@@ -295,8 +306,6 @@ export default Component.extend(ActionCableSupport, {
       canProvideMoves: false,
       winningMoves: messageData.moves,
     });
-
-    this.board.setRobotPositions(messageData.robot_positions);
 
     this.gameLog.addEvent({
       message: `The round is won by ${messageData.winner}!`,

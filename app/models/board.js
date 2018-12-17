@@ -137,7 +137,13 @@ export default DS.Model.extend({
    * @param positions
    */
   setRobotPositions(positions) {
+    // Make sure the start positions equal those of the robots.
+    const start = positions.map((robot) => {
+      return JSON.parse(JSON.stringify(robot));
+    });
+
     this.setProperties({
+      start,
       robots: positions,
       selectedRobot: null,
       moves: [],
@@ -162,15 +168,9 @@ export default DS.Model.extend({
    * @param goal
    */
   setCurrentGoal(goal) {
-    // Make sure the start positions equal those of the robots.
-    const start = this.robots.map((robot) => {
-      return JSON.parse(JSON.stringify(robot));
-    });
-
     this.setProperties({
       currentGoal: goal,
       moves: [],
-      start,
       selectedRobot: null,
     });
   },
