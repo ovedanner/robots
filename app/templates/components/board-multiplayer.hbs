@@ -4,6 +4,7 @@
       defaultText="Start new game"
       type="primary"
       onClick=(action "startNewGame")
+      disabled=(not ready)
       classNames="mb-2"}}
 
     {{bs-button
@@ -30,34 +31,28 @@
     disabled=(or (not board) (lt board.moves.length 1))
     onClick=(action "resetMoves")
     classNames="mb-2"}}
-  {{#if board}}
-    <div class="d-flex mb-2">
-      <div class="flex-grow-1 mr-2">
-        {{input
-          value=nrMoves
-          title="solution"
-          type="text"
-          placeholder="Moves"
-          autofocus=true
-          disabled=cantProvideSolution
-          class="form-control"}}
-      </div>
-      {{bs-button
-        defaultText="Send"
-        type="primary"
-        onClick=(action "sendNumberOfMoves" nrMoves)
-        disabled=(or cantProvideSolution (is-empty nrMoves))
-        classNames="ml-2"}}
+  <div class="d-flex mb-2">
+    <div class="flex-grow-1 mr-2">
+      {{input
+        value=nrMoves
+        title="solution"
+        type="text"
+        placeholder="Moves"
+        autofocus=true
+        disabled=cantProvideSolution
+        class="form-control"}}
     </div>
-    {{#if solutionTimerTask.isRunning}}
-      <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
-    {{/if}}
-    {{#if (and canProvideMoves movesTimerTask.isRunning)}}
-      <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
-    {{/if}}
-  {{/if}}
-  <p>Total number of players: {{totalNrPlayers}}</p>
-  <p>Players ready: {{nrPlayersReady}}</p>
+    {{bs-button
+      defaultText="Send"
+      type="primary"
+      onClick=(action "sendNumberOfMoves" nrMoves)
+      disabled=(or cantProvideSolution (is-empty nrMoves))
+      classNames="ml-2"}}
+  </div>
+  <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
+  <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
+  <p class="mb-2">Total number of players: {{totalNrPlayers}}</p>
+  <p class="mb-2">Players ready: {{nrPlayersReady}}</p>
 {{/game-controls}}
 {{#if board}}
   {{board-canvas

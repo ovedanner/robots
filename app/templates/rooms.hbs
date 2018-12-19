@@ -6,7 +6,7 @@
     {{#link-to "rooms.add" classNames="btn btn-primary"}}Create room{{/link-to}}
   </div>
   <div class="d-flex flex-row justify-content-center p-4 gray-borders">
-    {{#if (is-empty model)}}
+    {{#if (lt model.length 1)}}
       <span>There are no rooms yet! You can create one :)</span>
     {{else}}
       <ul class="d-flex flex-column flex-grow-1">
