@@ -40,6 +40,17 @@ export default Component.extend(ActionCableSupport, {
   winningMoves: null,
 
   /**
+   * Some player stats.
+   */
+  totalNrPlayers: 0,
+  nrPlayersReady: 0,
+
+  /**
+   * Is the current user ready?
+   */
+  ready: false,
+
+  /**
    * Does the user own the room? If so, he has more controls.
    */
   userOwnsRoom: computed('user.id', 'room.owner.id', function () {
@@ -114,6 +125,14 @@ export default Component.extend(ActionCableSupport, {
      */
     getNextGoal() {
       this.performAction('next_goal');
+    },
+
+    /**
+     * User is ready for the game to continue.
+     */
+    ready() {
+      this.performAction('ready');
+      this.set('ready', true);
     },
 
     /**
@@ -321,6 +340,24 @@ export default Component.extend(ActionCableSupport, {
     this.gameLog.addEvent({
       message: 'The game is finished!',
     });
+  },
+
+  /**
+   * Received info about the total number of players.
+   */
+  players(messageData) {
+    const totalNrPlayers = messageData.total;
+
+    this.set('totalNrPlayers', totalNrPlayers);
+  },
+
+  /**
+   * Received stats about player readiness.
+   */
+  playersReady(messageData) {
+    const nrPlayersReady = messageData.total;
+
+    this.set('nrPlayersReady', nrPlayersReady);
   },
 
   /**

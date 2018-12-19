@@ -13,6 +13,12 @@
       onClick=(action "getNextGoal") classNames="mb-2"}}
   {{/if}}
   {{bs-button
+    defaultText="Ready to play"
+    type="primary"
+    onClick=(action "ready")
+    disabled=ready
+    classNames="mb-2"}}
+  {{bs-button
     defaultText="Preview winning moves"
     type="primary"
     disabled=(is-empty winningMoves)
@@ -50,6 +56,8 @@
       <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
     {{/if}}
   {{/if}}
+  <p>Total number of players: {{totalNrPlayers}}</p>
+  <p>Players ready: {{nrPlayersReady}}</p>
 {{/game-controls}}
 {{#if board}}
   {{board-canvas
