@@ -6,12 +6,16 @@
       onClick=(action "startNewGame")
       disabled=(not ready)
       classNames="mb-2"}}
-
     {{bs-button
       defaultText="Next goal"
       type="primary"
       disabled=(not readyForNextGoal)
       onClick=(action "getNextGoal") classNames="mb-2"}}
+    {{bs-button
+      defaultText="Generate solution"
+      type="primary"
+      disabled=(not board.currentGoal)
+      onClick=(action "generateSolution") classNames="mb-2"}}
   {{/if}}
   {{bs-button
     defaultText="Ready to play"
@@ -49,8 +53,8 @@
       disabled=(or cantProvideSolution (is-empty nrMoves))
       classNames="ml-2"}}
   </div>
-  <p class="mb-2">Time left to provide solution: {{solutionTimer}}</p>
-  <p class="mb-2">Time left to provide moves: {{movesTimer}}</p>
+  <p class="mb-2">Time left to provide solution: {{#if solutionTimer.isRunning}}{{solutionTimer}}{{/if}}</p>
+  <p class="mb-2">Time left to provide moves: {{#if movesTimer.isRunning}}{{movesTimer}}{{/if}}</p>
   <p class="mb-2">Total number of players: {{totalNrPlayers}}</p>
   <p class="mb-2">Players ready: {{nrPlayersReady}}</p>
 {{/game-controls}}
