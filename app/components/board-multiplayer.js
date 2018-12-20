@@ -377,7 +377,7 @@ export default Component.extend(ActionCableSupport, {
    */
   generatedSolution(messageData) {
     const generatedMoves = messageData.moves;
-    console.log(generatedMoves);
+
     this.set('generatedMoves', generatedMoves);
   },
 
