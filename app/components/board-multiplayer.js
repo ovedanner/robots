@@ -205,6 +205,13 @@ export default Component.extend(ActionCableSupport, {
       open: this.socketOpen,
       message: this.socketMessage,
     });
+
+    // Check for an existing game that we can load.
+    this.ajax.request(`/rooms/${this.room.id}/game`).then((data) => {
+      if (data) {
+        this.startNewGame(data);
+      }
+    });
   },
 
   /**
