@@ -1,58 +1,59 @@
-{{#game-controls}}
-  {{#if userOwnsRoom}}
+<div class="d-flex flex-column">
+  {{#game-controls}}
+    {{#if userOwnsRoom}}
+      {{bs-button
+        defaultText="Start new game"
+        type="primary"
+        onClick=(action "startNewGame")
+        disabled=(not ready)
+        classNames="mb-2"}}
+      {{bs-button
+        defaultText="Next goal"
+        type="primary"
+        disabled=(not readyForNextGoal)
+        onClick=(action "getNextGoal") classNames="mb-2"}}
+    {{/if}}
     {{bs-button
-      defaultText="Start new game"
+      defaultText="Ready to play"
       type="primary"
-      onClick=(action "startNewGame")
-      disabled=(not ready)
+      onClick=(action "ready")
+      disabled=ready
       classNames="mb-2"}}
     {{bs-button
-      defaultText="Next goal"
+      defaultText="Preview winning moves"
       type="primary"
-      disabled=(not readyForNextGoal)
-      onClick=(action "getNextGoal") classNames="mb-2"}}
-  {{/if}}
-  {{bs-button
-    defaultText="Ready to play"
-    type="primary"
-    onClick=(action "ready")
-    disabled=ready
-    classNames="mb-2"}}
-  {{bs-button
-    defaultText="Preview winning moves"
-    type="primary"
-    disabled=(is-empty winningMoves)
-    onClick=(action "previewMoves" winningMoves)
-    classNames="mb-2"}}
-  {{bs-button
-    defaultText="Reset robots"
-    type="primary"
-    disabled=(or (not board) (lt board.moves.length 1))
-    onClick=(action "resetMoves")
-    classNames="mb-2"}}
-  <div class="d-flex mb-2">
-    <div class="flex-grow-1 mr-2">
-      {{input
-        value=nrMoves
-        title="solution"
-        type="text"
-        placeholder="Moves"
-        autofocus=true
-        disabled=cantProvideSolution
-        class="form-control"}}
-    </div>
+      disabled=(is-empty winningMoves)
+      onClick=(action "previewMoves" winningMoves)
+      classNames="mb-2"}}
     {{bs-button
-      defaultText="Send"
+      defaultText="Reset robots"
       type="primary"
-      onClick=(action "sendNumberOfMoves" nrMoves)
-      disabled=(or cantProvideSolution (is-empty nrMoves))
-      classNames="ml-2"}}
-  </div>
-  <p class="mb-2">Time left to provide solution: {{#if solutionTimerTask.isRunning}}{{solutionTimer}}{{/if}}</p>
-  <p class="mb-2">Time left to provide moves: {{#if movesTimerTask.isRunning}}{{movesTimer}}{{/if}}</p>
-  <p class="mb-2">Total number of players: {{totalNrPlayers}}</p>
-  <p class="mb-2">Players ready: {{nrPlayersReady}}</p>
-{{/game-controls}}
+      disabled=(or (not board) (lt board.moves.length 1))
+      onClick=(action "resetMoves")
+      classNames="mb-2"}}
+    <div class="d-flex mb-2">
+      <div class="flex-grow-1 mr-2">
+        {{input
+          value=nrMoves
+          title="solution"
+          type="text"
+          placeholder="Moves"
+          autofocus=true
+          disabled=cantProvideSolution
+          class="form-control"}}
+      </div>
+      {{bs-button
+        defaultText="Send"
+        type="primary"
+        onClick=(action "sendNumberOfMoves" nrMoves)
+        disabled=(or cantProvideSolution (is-empty nrMoves))
+        classNames="ml-2"}}
+    </div>
+    <p class="mb-2">Time left to provide solution: {{#if solutionTimerTask.isRunning}}{{solutionTimer}}{{/if}}</p>
+    <p class="mb-2">Time left to provide moves: {{#if movesTimerTask.isRunning}}{{movesTimer}}{{/if}}</p>
+  {{/game-controls}}
+  {{room-players players=room.members}}
+</div>
 {{#if board}}
   {{board-canvas
     board

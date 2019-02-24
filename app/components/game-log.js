@@ -44,9 +44,8 @@ export default Component.extend(ActionCableSupport, {
    * Make sure to properly clean up socket stuff.
    */
   willDestroyElement(...args) {
-    this._super(args);
-
     this.teardownSocket();
+    this._super(args);
   },
 
   /**

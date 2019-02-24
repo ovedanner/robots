@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import { readOnly } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { task, timeout } from 'ember-concurrency';
 import ActionCableSupport from '../mixins/action-cable-support';
@@ -32,7 +33,9 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Is the game ready for the next goal?
    */
-  readyForNextGoal: false,
+  readyForNextGoal: computed('totalNrPlayers', 'nrPlayersReady', function() {
+    return this.totalNrPlayers === this.nrPlayersReady;
+  }),
 
   /**
    * Winning moves for the current goal.
@@ -47,13 +50,15 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Some player stats.
    */
-  totalNrPlayers: 0,
-  nrPlayersReady: 0,
+  totalNrPlayers: readOnly('room.members.length'),
+  nrPlayersReady: readOnly('room.readyMembers.length'),
 
   /**
    * Is the current user ready?
    */
-  ready: false,
+  ready: computed('room.readyMembers.@each.id', 'user.id', function() {
+    return this.room.readyMembers.findBy('id', this.user.get('id'));
+  }),
 
   /**
    * Does the user own the room? If so, he has more controls.
@@ -137,7 +142,6 @@ export default Component.extend(ActionCableSupport, {
      */
     ready() {
       this.performAction('ready');
-      this.set('ready', true);
     },
 
     /**
@@ -181,12 +185,13 @@ export default Component.extend(ActionCableSupport, {
     },
 
     /**
-     * Make sure the game controls and log have the appropriate height.
+     * Make sure the game controls, game log and player log have the appropriate height.
      * @param width
      * @param height
      */
     boardSizeCalculated(width, height) {
-      document.getElementById('game-controls').style.height = `${height}px`;
+      document.getElementById('game-controls').style.height = `${0.6 * height}px`;
+      document.getElementById('player-log').style.height = `${0.4 * height}px`;
       document.getElementById('game-log').style.height = `${height}px`;
     },
 
@@ -212,6 +217,14 @@ export default Component.extend(ActionCableSupport, {
         this.startNewGame(data);
       }
     });
+  },
+
+  /**
+   * Make sure to properly clean up socket stuff.
+   */
+  willDestroyElement(...args) {
+    this.teardownSocket();
+    this._super(args);
   },
 
   /**
@@ -308,7 +321,6 @@ export default Component.extend(ActionCableSupport, {
   closedForMoves() {
     this.movesTimerTask.cancelAll();
     this.setProperties({
-      readyForNextGoal: true,
       canProvideMoves: false,
     });
 
@@ -323,7 +335,6 @@ export default Component.extend(ActionCableSupport, {
    */
   newGoal(messageData) {
     this.setProperties({
-      readyForNextGoal: false,
       cantProvideSolution: false,
       canProvideMoves: false,
       winningMoves: [],
@@ -340,7 +351,6 @@ export default Component.extend(ActionCableSupport, {
   goalWonBy(messageData) {
     this.movesTimerTask.cancelAll();
     this.setProperties({
-      readyForNextGoal: true,
       canProvideMoves: false,
       winningMoves: messageData.moves,
     });
@@ -362,21 +372,17 @@ export default Component.extend(ActionCableSupport, {
   },
 
   /**
-   * Received info about the total number of players.
+   * The number of players has changed.
    */
-  players(messageData) {
-    const totalNrPlayers = messageData.total;
-
-    this.set('totalNrPlayers', totalNrPlayers);
+  playersChanged() {
+    this.room.members.reload();
   },
 
   /**
-   * Received stats about player readiness.
+   * Player readiness has changed.
    */
-  playersReady(messageData) {
-    const nrPlayersReady = messageData.total;
-
-    this.set('nrPlayersReady', nrPlayersReady);
+  playersReady() {
+    this.room.members.reload();
   },
 
   /**

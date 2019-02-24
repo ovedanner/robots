@@ -2,17 +2,13 @@
   margin-top: $marginTop;
 
   #game-controls {
-    width: 300px;
-    max-height: 720px;
-
     #game-controls-container {
       background-color: $white;
     }
   }
 
   #game-log {
-    width: 300px;
-    max-height: 720px;
+    width: 250px;
     ul {
       list-style-type: none;
     }
@@ -48,6 +44,14 @@
       .author-name {
         color:black;
       }
+    }
+  }
+
+  #player-log {
+    list-style: none;
+
+    i.fa-check {
+      color: green;
     }
   }
 
