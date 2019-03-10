@@ -9,6 +9,7 @@ $colors: (
   "gray": #7d7b7a
 );
 $white: #f9f9f9;
+$light-green: #c3e17e;
 
 @each $colorName, $color in $colors {
   .#{$colorName}-borders {

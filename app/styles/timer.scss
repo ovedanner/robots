@@ -1,0 +1,39 @@
+.game-timer {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+
+  .game-timer__inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    transform: rotateY(-180deg) rotateZ(-90deg);
+
+    circle {
+      stroke-dasharray: 94px;
+      stroke-dashoffset: 0px;
+      stroke-linecap: round;
+      stroke-width: 4px;
+      stroke: $green;
+      fill: $light-green;
+    }
+  }
+
+  .game-timer__countdown {
+    position: relative;
+    line-height: 40px;
+  }
+}
+
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 0px;
+  }
+  to {
+    stroke-dashoffset: 94px;
+  }
+}

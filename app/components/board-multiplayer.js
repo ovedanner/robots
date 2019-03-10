@@ -33,8 +33,8 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Is the game ready for the next goal?
    */
-  readyForNextGoal: computed('totalNrPlayers', 'nrPlayersReady', function() {
-    return this.totalNrPlayers === this.nrPlayersReady;
+  readyForNextGoal: computed('totalNrPlayers', 'nrPlayersReady', 'board', function() {
+    return this.totalNrPlayers === this.nrPlayersReady && this.board;
   }),
 
   /**
@@ -70,26 +70,14 @@ export default Component.extend(ActionCableSupport, {
   /**
    * Timer for the amount of time left to come up with a solution.
    */
-  solutionTimerTask: task(function* (seconds) {
-    this.set('solutionTimer', seconds);
-
-    for (let i = 0; i < seconds; i++) {
-      yield timeout(1000);
-      this.decrementProperty('solutionTimer');
-    }
-  }).drop(),
+  showSolutionsTimer: false,
+  solutionSeconds: null,
 
   /**
    * Timer for the amount of time left to come up with the right moves.
    */
-  movesTimerTask: task(function* () {
-    this.set('movesTimer', 60);
-
-    for (let i = 0; i < 60; i++) {
-      yield timeout(1000);
-      this.decrementProperty('movesTimer');
-    }
-  }).drop(),
+  showMovesTimer: false,
+  movesSeconds: null,
 
   /**
    * Previews the given moves (assuming they start from the current
@@ -190,9 +178,14 @@ export default Component.extend(ActionCableSupport, {
      * @param height
      */
     boardSizeCalculated(width, height) {
-      document.getElementById('game-controls').style.height = `${0.6 * height}px`;
-      document.getElementById('player-log').style.height = `${0.4 * height}px`;
-      document.getElementById('game-log').style.height = `${height}px`;
+      const gameControls = this.$('#game-controls');
+      const playerLog = this.$('#player-log');
+      const gameLog = this.$('#game-log');
+      const gameControlsMarginBottom = parseInt(gameControls.css('margin-bottom'), 10);
+
+      gameControls.outerHeight(0.6 * height);
+      playerLog.outerHeight((0.4 * height) - gameControlsMarginBottom);
+      gameLog.outerHeight(height);
     },
 
     previewMoves(moves) {
@@ -280,8 +273,8 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   solutionIn(messageData) {
-    const secondsLeft = messageData.seconds_left;
-    this.solutionTimerTask.perform(secondsLeft);
+    this.set('solutionSeconds', messageData.seconds_left);
+    this.set('showSolutionsTimer', true);
 
     const bestSoFar = messageData.current_winner;
     const nrMoves = messageData.current_nr_moves;
@@ -298,9 +291,9 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   closedForSolutions(messageData) {
-    const secondsLeft = messageData.seconds_left;
-    this.solutionTimerTask.cancelAll();
-    this.movesTimerTask.perform(secondsLeft);
+    this.set('showSolutionsTimer', false);
+    this.set('movesSeconds', messageData.seconds_left);
+    this.set('showMovesTimer', true);
 
     const bestSoFar = messageData.current_winner;
     const bestSoFarId = messageData.current_winner_id;
@@ -319,7 +312,7 @@ export default Component.extend(ActionCableSupport, {
    * Nobody can provide moves anymore.
    */
   closedForMoves() {
-    this.movesTimerTask.cancelAll();
+    this.set('showMovesTimer', false);
     this.setProperties({
       canProvideMoves: false,
     });
@@ -327,6 +320,8 @@ export default Component.extend(ActionCableSupport, {
     this.gameLog.addEvent({
       message: 'The winner can\'t provide moves anymore.',
     });
+
+    this.room.members.reload();
   },
 
   /**
@@ -349,7 +344,7 @@ export default Component.extend(ActionCableSupport, {
    * @param messageData
    */
   goalWonBy(messageData) {
-    this.movesTimerTask.cancelAll();
+    this.set('showMovesTimer', false);
     this.setProperties({
       canProvideMoves: false,
       winningMoves: messageData.moves,
@@ -358,17 +353,21 @@ export default Component.extend(ActionCableSupport, {
     this.gameLog.addEvent({
       message: `The round is won by ${messageData.winner}!`,
     });
+
+    this.room.members.reload();
   },
 
   /**
    * No more goals, the game is finished!
    */
   gameFinished() {
-    this.board.setCurrentGoal(null);
+    this.set('board', null);
 
     this.gameLog.addEvent({
       message: 'The game is finished!',
     });
+
+    this.room.members.reload();
   },
 
   /**

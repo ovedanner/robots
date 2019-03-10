@@ -49,8 +49,14 @@
         disabled=(or cantProvideSolution (is-empty nrMoves))
         classNames="ml-2"}}
     </div>
-    <p class="mb-2">Time left to provide solution: {{#if solutionTimerTask.isRunning}}{{solutionTimer}}{{/if}}</p>
-    <p class="mb-2">Time left to provide moves: {{#if movesTimerTask.isRunning}}{{movesTimer}}{{/if}}</p>
+    <div class="d-flex align-items-center">
+      {{#if showSolutionsTimer}}
+        <span class="mr-auto">Provide solution in:</span>{{game-timer countdown=solutionSeconds}}
+      {{/if}}
+      {{#if showMovesTimer}}
+        <span class="mr-auto">Provide solution in:</span>{{game-timer countdown=movesSeconds}}
+      {{/if}}
+    </div>
   {{/game-controls}}
   {{room-players players=room.members}}
 </div>

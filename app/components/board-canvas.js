@@ -45,6 +45,7 @@ const BoardCanvas = Component.extend({
    * Sizes.
    */
   cellSize: 45,
+
   boardWidth: computed('cellSize', 'board.nrRows', function() {
     return this.cellSize * this.board.nrRows;
   }),
