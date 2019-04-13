@@ -2,6 +2,7 @@
   margin-top: $marginTop;
 
   #game-controls {
+    width: 250px;
     #game-controls-container {
       background-color: $white;
     }
@@ -32,12 +33,12 @@
       // Differentiate between your own events and those
       // of others.
       &.own {
-        margin-left: 50px;
+        margin-left: 10px;
         text-align: right;
         background-color: $gray-500;
       }
       &.other {
-        margin-right: 50px;
+        margin-right: 10px;
         background-color: $green;
       }
 

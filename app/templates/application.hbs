@@ -2,9 +2,11 @@
   {{flash-message flash=flash}}
 {{/each}}
 
-<div id="content-wrapper" class="container d-flex justify-content-center">
+<div id="content-wrapper" class="d-flex">
   {{#if session.isAuthenticated}}
     <div {{action "logout"}} class="logout"><span>Logout</span></div>
   {{/if}}
-  {{outlet}}
+  <div id="content">
+    {{outlet}}
+  </div>
 </div>

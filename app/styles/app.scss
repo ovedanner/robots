@@ -21,6 +21,10 @@ html, body, ul, p, h1, h2, h3 {
   }
 }
 
+#content {
+  margin: 0 auto;
+}
+
 @import "base";
 @import "start";
 @import "play";
